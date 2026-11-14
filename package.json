@@ -108,5 +108,10 @@
     "@civ-clone/core-world": "^0.1.24",
     "@civ-clone/core-world-generator": "^0.1.7",
     "@civ-clone/core-yield": "^0.1.0"
+  },
+  "civ-clone": {
+    "conflicts": [
+      "@civ-clone/civ1-world"
+    ]
   }
 }
