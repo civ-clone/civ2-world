@@ -5,6 +5,14 @@ export declare const specialChance: number;
 /** Half of Grassland squares have a shield (`tile_grassland_has_shield`'s diagonal pattern). */
 export declare const shieldChance = 0.5;
 /**
+ * The Grassland's shield roll, at `shieldChance`: one draw each time it's asked. Shared by the `Feature` rules below and
+ *  the terrain-changed rules, which roll it once for a square that becomes Grassland.
+ */
+export declare const shieldRule: (
+  terrainFeatureRegistry?: TerrainFeatureRegistry,
+  randomNumberGenerator?: () => number
+) => Feature;
+/**
  * The `Feature` rules that give a new terrain its special: at most one, unlike independent rolls, which could give a
  *  Desert both an Oasis and Oil. Which special (none, the first or the second) is drawn once per terrain, the first
  *  time a rule asks.

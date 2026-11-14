@@ -18,6 +18,8 @@
     "ts:compile": "tsc --build tsconfig.json"
   },
   "devDependencies": {
+    "@civ-clone/base-unit-action-clear-jungle": "^0.1.8",
+    "@civ-clone/base-unit-action-clear-swamp": "^0.1.8",
     "@civ-clone/civ2-asset-extractor": "github:civ-clone/civ2-asset-extractor",
     "@civ-clone/simple-world-generator": "github:civ-clone/simple-world-generator",
     "@types/chai": "^4.0.0",

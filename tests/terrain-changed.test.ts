@@ -35,7 +35,10 @@ const setUp = async (rows: Square[][]) => {
     terrainFeatureRegistry = new TerrainFeatureRegistry(),
     world = await fixedWorld(rows, terrainFeatureRegistry, ruleRegistry);
 
-  ruleRegistry.register(...terrainChanged(terrainFeatureRegistry));
+  // A draw that never rolls a Grassland shield, so a square's features are only what it carries over.
+  ruleRegistry.register(
+    ...terrainChanged(terrainFeatureRegistry, undefined, (): number => 0.99)
+  );
 
   const names = (terrain: Terrain): string[] =>
     terrainFeatureRegistry
@@ -71,21 +74,57 @@ describe('tile:terrain-changed', (): void => {
     expect(terrainFeatureRegistry.getByTerrain(before)).to.deep.equal([]);
   });
 
-  it('takes off a special the new terrain was given when made, but keeps a Grassland shield', async (): Promise<void> => {
-    const { names, ruleRegistry, terrainFeatureRegistry, world } = await setUp([
-        [[Forest], [Swamp]],
-      ]),
-      [forest, swamp] = world.tiles(),
-      plains = new Plains(ruleRegistry),
-      grassland = new Grassland(ruleRegistry);
+  it('takes off whatever the new terrain was given when made, and rolls a Grassland shield once', async (): Promise<void> => {
+    const outcomes = await Promise.all(
+      [0, 0.99].map(async (draw: number): Promise<string[][]> => {
+        const ruleRegistry = new RuleRegistry(),
+          terrainFeatureRegistry = new TerrainFeatureRegistry(),
+          world = await fixedWorld(
+            [[[Forest], [Swamp], [Swamp]]],
+            terrainFeatureRegistry,
+            ruleRegistry
+          ),
+          [forest, swamp, swampWithRiver] = world.tiles(),
+          plains = new Plains(ruleRegistry),
+          grassland = new Grassland(ruleRegistry),
+          riverGrassland = new Grassland(ruleRegistry);
+        let draws = 0;
 
-    terrainFeatureRegistry.register(new Wheat(plains), new Shield(grassland));
+        ruleRegistry.register(
+          ...terrainChanged(terrainFeatureRegistry, undefined, (): number => {
+            draws++;
 
-    forest.setTerrain(plains);
-    swamp.setTerrain(grassland);
+            return draw;
+          })
+        );
 
-    expect(names(forest.terrain())).to.deep.equal([]);
-    expect(names(swamp.terrain())).to.deep.equal(['Shield']);
+        // What the terrains rolled when they were made: a Wheat, and two shields (one of them a conversion's own).
+        terrainFeatureRegistry.register(
+          new Wheat(plains),
+          new Shield(grassland),
+          new Shield(riverGrassland),
+          new River(swampWithRiver.terrain())
+        );
+
+        forest.setTerrain(plains);
+        swamp.setTerrain(grassland);
+        swampWithRiver.setTerrain(riverGrassland);
+
+        // One draw for each square that became Grassland, none for the Plains.
+        expect(draws).to.equal(2);
+
+        return [forest, swamp, swampWithRiver].map((tile) =>
+          terrainFeatureRegistry
+            .getByTerrain(tile.terrain())
+            .map((feature) => feature.constructor.name)
+        );
+      })
+    );
+
+    expect(outcomes).to.deep.equal([
+      [[], ['Shield'], ['River', 'Shield']],
+      [[], [], ['River']],
+    ]);
   });
 
   it('carries a special from a terrain with one to the same slot of another', async (): Promise<void> => {

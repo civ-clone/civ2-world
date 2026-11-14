@@ -21,6 +21,47 @@ export const specialChance = 1 / 16;
 /** Half of Grassland squares have a shield (`tile_grassland_has_shield`'s diagonal pattern). */
 export const shieldChance = 0.5;
 
+/** A `Feature` rule: `FeatureType` on a `TerrainType` when `chosen`, registered in `terrainFeatureRegistry`. */
+const featureRule = (
+  terrainFeatureRegistry: TerrainFeatureRegistry,
+  FeatureType: typeof TerrainFeature,
+  TerrainType: typeof Terrain,
+  chosen: (terrain: Terrain) => boolean
+): Feature =>
+  new Feature(
+    new Criterion(
+      (TerrainFeatureType: typeof TerrainFeature): boolean =>
+        TerrainFeatureType === FeatureType
+    ),
+    new Criterion(
+      (TerrainFeatureType: typeof TerrainFeature, terrain: Terrain) =>
+        terrain instanceof TerrainType
+    ),
+    new Criterion(
+      (TerrainFeatureType: typeof TerrainFeature, terrain: Terrain) =>
+        chosen(terrain)
+    ),
+    new Effect(
+      (TerrainFeatureType: typeof TerrainFeature, terrain: Terrain): void =>
+        terrainFeatureRegistry.register(new TerrainFeatureType(terrain))
+    )
+  );
+
+/**
+ * The Grassland's shield roll, at `shieldChance`: one draw each time it's asked. Shared by the `Feature` rules below and
+ *  the terrain-changed rules, which roll it once for a square that becomes Grassland.
+ */
+export const shieldRule = (
+  terrainFeatureRegistry: TerrainFeatureRegistry = terrainFeatureRegistryInstance,
+  randomNumberGenerator: () => number = rngInstance
+): Feature =>
+  featureRule(
+    terrainFeatureRegistry,
+    Shield,
+    Grassland,
+    (): boolean => randomNumberGenerator() < shieldChance
+  );
+
 /**
  * The `Feature` rules that give a new terrain its special: at most one, unlike independent rolls, which could give a
  *  Desert both an Oasis and Oil. Which special (none, the first or the second) is drawn once per terrain, the first
@@ -50,24 +91,7 @@ export const getRules = (
       TerrainType: typeof Terrain,
       chosen: (terrain: Terrain) => boolean
     ): Feature =>
-      new Feature(
-        new Criterion(
-          (TerrainFeatureType: typeof TerrainFeature): boolean =>
-            TerrainFeatureType === FeatureType
-        ),
-        new Criterion(
-          (TerrainFeatureType: typeof TerrainFeature, terrain: Terrain) =>
-            terrain instanceof TerrainType
-        ),
-        new Criterion(
-          (TerrainFeatureType: typeof TerrainFeature, terrain: Terrain) =>
-            chosen(terrain)
-        ),
-        new Effect(
-          (TerrainFeatureType: typeof TerrainFeature, terrain: Terrain): void =>
-            terrainFeatureRegistry.register(new TerrainFeatureType(terrain))
-        )
-      );
+      featureRule(terrainFeatureRegistry, FeatureType, TerrainType, chosen);
 
   return [
     ...terrainTypes.flatMap((TerrainType: typeof Terrain, index: number) =>
@@ -82,11 +106,7 @@ export const getRules = (
             )
         )
     ),
-    rule(
-      Shield,
-      Grassland,
-      (): boolean => randomNumberGenerator() < shieldChance
-    ),
+    shieldRule(terrainFeatureRegistry, randomNumberGenerator),
   ];
 };
 

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRules = exports.shieldChance = exports.specialChance = void 0;
+exports.getRules = exports.shieldRule = exports.shieldChance = exports.specialChance = void 0;
 const TerrainFeatureRegistry_1 = require("@civ-clone/core-terrain-feature/TerrainFeatureRegistry");
 const terrainTable_1 = require("../../lib/terrainTable");
 const Criterion_1 = require("@civ-clone/core-rule/Criterion");
@@ -15,6 +15,14 @@ const core_random_1 = require("@civ-clone/core-random");
 exports.specialChance = 1 / 16;
 /** Half of Grassland squares have a shield (`tile_grassland_has_shield`'s diagonal pattern). */
 exports.shieldChance = 0.5;
+/** A `Feature` rule: `FeatureType` on a `TerrainType` when `chosen`, registered in `terrainFeatureRegistry`. */
+const featureRule = (terrainFeatureRegistry, FeatureType, TerrainType, chosen) => new Feature_1.default(new Criterion_1.default((TerrainFeatureType) => TerrainFeatureType === FeatureType), new Criterion_1.default((TerrainFeatureType, terrain) => terrain instanceof TerrainType), new Criterion_1.default((TerrainFeatureType, terrain) => chosen(terrain)), new Effect_1.default((TerrainFeatureType, terrain) => terrainFeatureRegistry.register(new TerrainFeatureType(terrain))));
+/**
+ * The Grassland's shield roll, at `shieldChance`: one draw each time it's asked. Shared by the `Feature` rules below and
+ *  the terrain-changed rules, which roll it once for a square that becomes Grassland.
+ */
+const shieldRule = (terrainFeatureRegistry = TerrainFeatureRegistry_1.instance, randomNumberGenerator = core_random_1.instance) => featureRule(terrainFeatureRegistry, TerrainFeatures_1.Shield, Terrains_1.Grassland, () => randomNumberGenerator() < exports.shieldChance);
+exports.shieldRule = shieldRule;
 /**
  * The `Feature` rules that give a new terrain its special: at most one, unlike independent rolls, which could give a
  *  Desert both an Oasis and Oil. Which special (none, the first or the second) is drawn once per terrain, the first
@@ -30,12 +38,12 @@ const getRules = (terrainFeatureRegistry = TerrainFeatureRegistry_1.instance, ra
                 : 0);
         }
         return slots.get(terrain);
-    }, rule = (FeatureType, TerrainType, chosen) => new Feature_1.default(new Criterion_1.default((TerrainFeatureType) => TerrainFeatureType === FeatureType), new Criterion_1.default((TerrainFeatureType, terrain) => terrain instanceof TerrainType), new Criterion_1.default((TerrainFeatureType, terrain) => chosen(terrain)), new Effect_1.default((TerrainFeatureType, terrain) => terrainFeatureRegistry.register(new TerrainFeatureType(terrain))));
+    }, rule = (FeatureType, TerrainType, chosen) => featureRule(terrainFeatureRegistry, FeatureType, TerrainType, chosen);
     return [
         ...terrainTable_1.terrainTypes.flatMap((TerrainType, index) => [1, 2]
             .filter((slot) => terrainTable_1.specialTypes[slot - 1][index] !== null)
             .map((slot) => rule(terrainTable_1.specialTypes[slot - 1][index], TerrainType, (terrain) => slotOf(terrain) === slot))),
-        rule(TerrainFeatures_1.Shield, Terrains_1.Grassland, () => randomNumberGenerator() < exports.shieldChance),
+        (0, exports.shieldRule)(terrainFeatureRegistry, randomNumberGenerator),
     ];
 };
 exports.getRules = getRules;
