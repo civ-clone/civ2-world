@@ -1,0 +1,26 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Tundra = exports.Swamp = exports.Plains = exports.Ocean = exports.Mountains = exports.Jungle = exports.Hills = exports.Grassland = exports.Glacier = exports.Forest = exports.Desert = void 0;
+var Desert_1 = require("@civ-clone/base-terrain-desert/Desert");
+Object.defineProperty(exports, "Desert", { enumerable: true, get: function () { return Desert_1.Desert; } });
+var Forest_1 = require("@civ-clone/base-terrain-forest/Forest");
+Object.defineProperty(exports, "Forest", { enumerable: true, get: function () { return Forest_1.Forest; } });
+var Glacier_1 = require("@civ-clone/base-terrain-glacier/Glacier");
+Object.defineProperty(exports, "Glacier", { enumerable: true, get: function () { return Glacier_1.Glacier; } });
+var Grassland_1 = require("@civ-clone/base-terrain-grassland/Grassland");
+Object.defineProperty(exports, "Grassland", { enumerable: true, get: function () { return Grassland_1.Grassland; } });
+var Hills_1 = require("@civ-clone/base-terrain-hills/Hills");
+Object.defineProperty(exports, "Hills", { enumerable: true, get: function () { return Hills_1.Hills; } });
+var Jungle_1 = require("@civ-clone/base-terrain-jungle/Jungle");
+Object.defineProperty(exports, "Jungle", { enumerable: true, get: function () { return Jungle_1.Jungle; } });
+var Mountains_1 = require("@civ-clone/base-terrain-mountains/Mountains");
+Object.defineProperty(exports, "Mountains", { enumerable: true, get: function () { return Mountains_1.Mountains; } });
+var Ocean_1 = require("@civ-clone/base-terrain-ocean/Ocean");
+Object.defineProperty(exports, "Ocean", { enumerable: true, get: function () { return Ocean_1.Ocean; } });
+var Plains_1 = require("@civ-clone/base-terrain-plains/Plains");
+Object.defineProperty(exports, "Plains", { enumerable: true, get: function () { return Plains_1.Plains; } });
+var Swamp_1 = require("@civ-clone/base-terrain-swamp/Swamp");
+Object.defineProperty(exports, "Swamp", { enumerable: true, get: function () { return Swamp_1.Swamp; } });
+var Tundra_1 = require("@civ-clone/base-terrain-tundra/Tundra");
+Object.defineProperty(exports, "Tundra", { enumerable: true, get: function () { return Tundra_1.Tundra; } });
+//# sourceMappingURL=Terrains.js.map

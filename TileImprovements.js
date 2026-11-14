@@ -1,0 +1,20 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Road = exports.Railroad = exports.Pollution = exports.Mine = exports.Irrigation = exports.Fortress = exports.Farmland = exports.Airbase = void 0;
+var Airbase_1 = require("@civ-clone/base-tile-improvement-airbase/Airbase");
+Object.defineProperty(exports, "Airbase", { enumerable: true, get: function () { return Airbase_1.Airbase; } });
+var Farmland_1 = require("@civ-clone/base-tile-improvement-farmland/Farmland");
+Object.defineProperty(exports, "Farmland", { enumerable: true, get: function () { return Farmland_1.Farmland; } });
+var Fortress_1 = require("@civ-clone/base-tile-improvement-fortress/Fortress");
+Object.defineProperty(exports, "Fortress", { enumerable: true, get: function () { return Fortress_1.Fortress; } });
+var Irrigation_1 = require("@civ-clone/base-tile-improvement-irrigation/Irrigation");
+Object.defineProperty(exports, "Irrigation", { enumerable: true, get: function () { return Irrigation_1.Irrigation; } });
+var Mine_1 = require("@civ-clone/base-tile-improvement-mine/Mine");
+Object.defineProperty(exports, "Mine", { enumerable: true, get: function () { return Mine_1.Mine; } });
+var Pollution_1 = require("@civ-clone/base-tile-improvement-pollution/Pollution");
+Object.defineProperty(exports, "Pollution", { enumerable: true, get: function () { return Pollution_1.Pollution; } });
+var Railroad_1 = require("@civ-clone/base-tile-improvement-railroad/Railroad");
+Object.defineProperty(exports, "Railroad", { enumerable: true, get: function () { return Railroad_1.Railroad; } });
+var Road_1 = require("@civ-clone/base-tile-improvement-road/Road");
+Object.defineProperty(exports, "Road", { enumerable: true, get: function () { return Road_1.Road; } });
+//# sourceMappingURL=TileImprovements.js.map

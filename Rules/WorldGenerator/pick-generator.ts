@@ -1,0 +1,19 @@
+import {
+  GeneratorRegistry,
+  instance as generatorRegistryInstance,
+} from '@civ-clone/core-world-generator/GeneratorRegistry';
+import Effect from '@civ-clone/core-rule/Effect';
+import PickGenerator from '@civ-clone/core-world-generator/Rules/PickGenerator';
+import pickGenerator from '@civ-clone/base-world-start/lib/pickGenerator';
+import { instance as rngInstance } from '@civ-clone/core-random';
+
+export const getRules = (
+  generatorRegistry: GeneratorRegistry = generatorRegistryInstance,
+  randomNumberGenerator: () => number = rngInstance
+): PickGenerator[] => [
+  new PickGenerator(
+    new Effect(() => pickGenerator(generatorRegistry, randomNumberGenerator))
+  ),
+];
+
+export default getRules;

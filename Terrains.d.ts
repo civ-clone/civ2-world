@@ -1,0 +1,11 @@
+export { Desert } from '@civ-clone/base-terrain-desert/Desert';
+export { Forest } from '@civ-clone/base-terrain-forest/Forest';
+export { Glacier } from '@civ-clone/base-terrain-glacier/Glacier';
+export { Grassland } from '@civ-clone/base-terrain-grassland/Grassland';
+export { Hills } from '@civ-clone/base-terrain-hills/Hills';
+export { Jungle } from '@civ-clone/base-terrain-jungle/Jungle';
+export { Mountains } from '@civ-clone/base-terrain-mountains/Mountains';
+export { Ocean } from '@civ-clone/base-terrain-ocean/Ocean';
+export { Plains } from '@civ-clone/base-terrain-plains/Plains';
+export { Swamp } from '@civ-clone/base-terrain-swamp/Swamp';
+export { Tundra } from '@civ-clone/base-terrain-tundra/Tundra';
