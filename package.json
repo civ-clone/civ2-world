@@ -37,6 +37,7 @@
     "@civ-clone/base-government-communism": "^0.1.0",
     "@civ-clone/base-government-democracy": "^0.1.0",
     "@civ-clone/base-government-despotism": "^0.1.0",
+    "@civ-clone/base-government-fundamentalism": "^0.1.0",
     "@civ-clone/base-government-monarchy": "^0.1.0",
     "@civ-clone/base-government-republic": "^0.1.0",
     "@civ-clone/base-government-tile-penalty": "^0.1.0",
