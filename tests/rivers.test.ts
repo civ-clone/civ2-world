@@ -35,6 +35,12 @@ const island = (): Square[][] =>
   );
 
 describe('rivers', (): void => {
+  it('need 5 squares for the first 800 attempts, then a little less', (): void => {
+    expect(minimumLength(0)).to.equal(5);
+    expect(minimumLength(799)).to.above(4);
+    expect(minimumLength(800)).to.equal(4);
+  });
+
   it('never run uphill, along edges, from a source to the sea or another river', async (): Promise<void> => {
     const ruleRegistry = new RuleRegistry(),
       terrainFeatureRegistry = new TerrainFeatureRegistry(),
@@ -47,7 +53,8 @@ describe('rivers', (): void => {
     expect(rivers.length).to.equal(Math.round(land / landSquaresPerRiver));
 
     rivers.forEach((river: Tile[]): void => {
-      expect(river.length).to.at.least(minimumLength);
+      // Never fewer than 5 − 1024 / 800, so at least 4; 5 within the first 800 attempts.
+      expect(river.length).to.at.least(Math.ceil(minimumLength(1024)));
 
       river.forEach((tile: Tile, index: number): void => {
         expect(tile.terrain()).not.to.instanceOf(Hills);

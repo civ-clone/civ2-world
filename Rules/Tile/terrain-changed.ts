@@ -8,7 +8,13 @@ import {
   specialTypes,
   terrainIndex,
 } from '../../lib/terrainTable';
+import {
+  PlayerRegistry,
+  instance as playerRegistryInstance,
+} from '@civ-clone/core-player/PlayerRegistry';
 import Effect from '@civ-clone/core-rule/Effect';
+import Player from '@civ-clone/core-player/Player';
+import Tile from '@civ-clone/core-world/Tile';
 import { River } from '../../TerrainFeatures';
 import Terrain from '@civ-clone/core-terrain/Terrain';
 import TerrainChanged from '@civ-clone/core-world/Rules/TerrainChanged';
@@ -16,6 +22,7 @@ import TerrainFeature from '@civ-clone/core-terrain-feature/TerrainFeature';
 import replaceFeatures from '@civ-clone/base-terrain-feature/lib/replaceFeatures';
 
 export const FEATURES = 'civ2-world:terrain-changed/features';
+export const CLEAR_YIELD_CACHE = 'civ2-world:terrain-changed/clear-yield-cache';
 
 /**
  * What a square's features become when its terrain changes, whatever changed it (`map.cpp` `tile_set_terrain`, which
@@ -28,7 +35,8 @@ export const FEATURES = 'civ2-world:terrain-changed/features';
  *    but a Grassland's shield, which is the square's own pattern rather than a special, is left as it was rolled.
  */
 export const getRules = (
-  terrainFeatureRegistry: TerrainFeatureRegistry = terrainFeatureRegistryInstance
+  terrainFeatureRegistry: TerrainFeatureRegistry = terrainFeatureRegistryInstance,
+  playerRegistry: PlayerRegistry = playerRegistryInstance
 ): TerrainChanged[] => [
   new TerrainChanged(
     FEATURES,
@@ -68,6 +76,18 @@ export const getRules = (
         }
       )
     )
+  ),
+  // Nothing else works a square's yields out again when its terrain changes (`Tile.setTerrain` doesn't, and nothing
+  //  clears the cache at the start of a turn), so the old terrain's yields would stay: for nobody, and for each player.
+  new TerrainChanged(
+    CLEAR_YIELD_CACHE,
+    new Effect((tile: Tile): void => {
+      tile.clearYieldCache(null);
+
+      playerRegistry.forEach((player: Player): void =>
+        tile.clearYieldCache(player)
+      );
+    })
   ),
 ];
 

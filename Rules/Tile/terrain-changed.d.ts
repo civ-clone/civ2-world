@@ -1,6 +1,9 @@
 import { TerrainFeatureRegistry } from '@civ-clone/core-terrain-feature/TerrainFeatureRegistry';
+import { PlayerRegistry } from '@civ-clone/core-player/PlayerRegistry';
 import TerrainChanged from '@civ-clone/core-world/Rules/TerrainChanged';
 export declare const FEATURES = 'civ2-world:terrain-changed/features';
+export declare const CLEAR_YIELD_CACHE =
+  'civ2-world:terrain-changed/clear-yield-cache';
 /**
  * What a square's features become when its terrain changes, whatever changed it (`map.cpp` `tile_set_terrain`, which
  *  keeps the river bit and replaces only the terrain):
@@ -12,6 +15,7 @@ export declare const FEATURES = 'civ2-world:terrain-changed/features';
  *    but a Grassland's shield, which is the square's own pattern rather than a special, is left as it was rolled.
  */
 export declare const getRules: (
-  terrainFeatureRegistry?: TerrainFeatureRegistry
+  terrainFeatureRegistry?: TerrainFeatureRegistry,
+  playerRegistry?: PlayerRegistry
 ) => TerrainChanged[];
 export default getRules;

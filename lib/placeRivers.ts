@@ -11,15 +11,18 @@ import { hasRiver } from './river';
 
 // Interim, until Civilization II's own river walk is ported with its generator (`map.cpp` `mapgen_place_rivers`).
 //  The same shape: a river starts on a random square, runs along edges (`Tile.getAdjacent`) and ends at the sea or at
-//  another river, and one that's too short isn't kept. Here it never runs uphill, which with no heights on the map
+//  another river, and one that's too short (`minimumLength`) isn't kept. Here it never runs uphill, which with no heights on the map
 //  means never away from the nearest sea: it may wander along a level, but never back over itself, so it ends. Civilization II's rivers also change the terrain they cross
 //  (Hills and Mountains to Grassland, and so on); these don't, and keep off the terrains that would change.
 
 /** About 14 rivers on a normal map of about 1,300 land squares (`12 + 2 × land mass + 2 × climate`): one per 90. */
 export const landSquaresPerRiver = 90;
 
-/** A river must cross at least this many squares (`5 − attempts / 800` in Civilization II). */
-export const minimumLength = 4;
+/**
+ * How many squares a river must cross to be kept, on attempt `attempt` (from 0): `5 − attempts / 800 <= length`
+ *  (`map.cpp` `mapgen_place_rivers`, :1314), so 5 for the first 800 attempts, then a little less.
+ */
+export const minimumLength = (attempt: number): number => 5 - attempt / 800;
 
 /** Civilization II gives up after this many tries. */
 export const maximumAttempts = 1024;
@@ -112,7 +115,7 @@ export const placeRivers = (
       river.push(current);
     }
 
-    if (!ended || river.length < minimumLength) {
+    if (!ended || river.length < minimumLength(attempt)) {
       continue;
     }
 
