@@ -18,6 +18,8 @@
     "ts:compile": "tsc --build tsconfig.json"
   },
   "devDependencies": {
+    "@civ-clone/base-unit-action-clear-jungle": "^0.1.8",
+    "@civ-clone/base-unit-action-clear-swamp": "^0.1.8",
     "@civ-clone/civ2-asset-extractor": "github:civ-clone/civ2-asset-extractor",
     "@civ-clone/simple-world-generator": "github:civ-clone/simple-world-generator",
     "@types/chai": "^4.0.0",
@@ -35,6 +37,7 @@
     "@civ-clone/base-government-communism": "^0.1.0",
     "@civ-clone/base-government-democracy": "^0.1.0",
     "@civ-clone/base-government-despotism": "^0.1.0",
+    "@civ-clone/base-government-fundamentalism": "^0.1.0",
     "@civ-clone/base-government-monarchy": "^0.1.0",
     "@civ-clone/base-government-republic": "^0.1.0",
     "@civ-clone/base-government-tile-penalty": "^0.1.0",
@@ -105,5 +108,10 @@
     "@civ-clone/core-world": "^0.1.24",
     "@civ-clone/core-world-generator": "^0.1.7",
     "@civ-clone/core-yield": "^0.1.0"
+  },
+  "civ-clone": {
+    "conflicts": [
+      "@civ-clone/civ1-world"
+    ]
   }
 }

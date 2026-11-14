@@ -30,8 +30,9 @@ export const governmentTileYieldTypes: (typeof Yield)[] = [
   Trade,
 ];
 
-// Civilization II's governments that exist so far, in its order. Fundamentalism is pending (see `Governments`); it
-//  falls into place by its index once it does.
+// Civilization II's governments, in its order. Each step below compares the government's index, as `city.cpp`
+//  `city_tile_yield` compares `civs[civ].government`: Fundamentalism (4) is never penalised and gains trade only while
+//  the city celebrates.
 const governments: (typeof Government)[] = [
     Anarchy,
     Despotism,
@@ -40,7 +41,7 @@ const governments: (typeof Government)[] = [
     Fundamentalism,
     Republic,
     Democracy,
-  ].filter((Type): Type is typeof Government => Type !== null),
+  ],
   where = (test: (index: number) => boolean): (typeof Government)[] =>
     governments.filter((Type) => test(governmentIndex(Type)));
 

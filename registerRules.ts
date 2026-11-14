@@ -39,7 +39,7 @@ export const register = (game: Game): void => {
     ...removed(game.tileImprovements, game.engine),
     ...playerPickStartTile(game.engine, game.rng),
     ...start(game.rules, game.engine),
-    ...terrainChanged(game.terrainFeatures, game.players),
+    ...terrainChanged(game.terrainFeatures, game.players, game.rng),
     ...tileYield(game.tileImprovements, game.terrainFeatures),
     ...tileYieldModifier(game.tileImprovements, game.playerGovernments),
     ...worldBuilt(game.terrainFeatures, game.goodyHuts, game.rules, game.rng),
