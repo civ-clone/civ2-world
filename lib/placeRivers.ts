@@ -120,6 +120,9 @@ export const placeRivers = (
       ...river.map((tile: Tile): River => new River(tile.terrain()))
     );
 
+    // Anything that asked for these squares' yields before (another package's world `Built` rule) asks again.
+    river.forEach((tile: Tile): void => tile.clearYieldCache(null));
+
     rivers.push(river);
   }
 

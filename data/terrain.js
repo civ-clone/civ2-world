@@ -26,7 +26,7 @@ exports.terrains = [
     [2, 3, 1, 2, 0, [exports.PLAINS, 0, 5, 5], [exports.NO, 0, 5, 0], exports.GRASSLAND],
     // RULES.TXT @TERRAIN row 4
     [2, 4, 1, 0, 0, [exports.YES, 1, 10, 0], [exports.YES, 3, 10, 1], exports.PLAINS],
-    // RULES.TXT @TERRAIN row 5. Irrigation is `no`, but its bonus is 1, which a city on Mountains gets (`city_tile_yield`).
+    // RULES.TXT @TERRAIN row 5 (OpenCiv2 civ.cpp:1251). Irrigation is `no`, but its bonus is 1, which a city on Mountains gets (`city_tile_yield`).
     [3, 6, 0, 1, 0, [exports.NO, 1, 10, 0], [exports.YES, 1, 10, 6], exports.HILLS],
     // RULES.TXT @TERRAIN row 6
     [1, 2, 1, 0, 0, [exports.YES, 1, 10, 1], [exports.NO, 0, 0, 0], exports.DESERT],
@@ -45,31 +45,51 @@ exports.terrains = [
  */
 exports.specials = [
     [
-        // RULES.TXT @TERRAIN rows 11 to 21
+        // RULES.TXT @TERRAIN row 11
         [1, 2, 3, 1, 0],
+        // RULES.TXT @TERRAIN row 12
         [1, 2, 1, 3, 0],
+        // RULES.TXT @TERRAIN row 13
         [1, 2, 2, 1, 0],
+        // RULES.TXT @TERRAIN row 14
         [2, 3, 3, 2, 0],
+        // RULES.TXT @TERRAIN row 15
         [2, 4, 1, 2, 0],
+        // RULES.TXT @TERRAIN row 16
         [3, 6, 0, 1, 6],
+        // RULES.TXT @TERRAIN row 17
         [1, 2, 3, 1, 0],
+        // RULES.TXT @TERRAIN row 18
         [2, 2, 1, 1, 4],
+        // RULES.TXT @TERRAIN row 19
         [2, 3, 1, 4, 0],
+        // RULES.TXT @TERRAIN row 20
         [2, 3, 1, 0, 4],
+        // RULES.TXT @TERRAIN row 21
         [1, 2, 3, 0, 2],
     ],
     [
-        // RULES.TXT @TERRAIN rows 22 to 32
+        // RULES.TXT @TERRAIN row 22
         [1, 2, 0, 4, 0],
+        // RULES.TXT @TERRAIN row 23
         [1, 2, 3, 1, 0],
+        // RULES.TXT @TERRAIN row 24
         [1, 2, 2, 1, 0],
+        // RULES.TXT @TERRAIN row 25
         [2, 3, 1, 2, 3],
+        // RULES.TXT @TERRAIN row 26
         [2, 4, 1, 0, 4],
+        // RULES.TXT @TERRAIN row 27
         [3, 6, 0, 4, 0],
+        // RULES.TXT @TERRAIN row 28
         [1, 2, 2, 0, 3],
+        // RULES.TXT @TERRAIN row 29
         [2, 2, 0, 4, 0],
+        // RULES.TXT @TERRAIN row 30
         [2, 3, 3, 0, 4],
+        // RULES.TXT @TERRAIN row 31
         [2, 3, 4, 0, 1],
+        // RULES.TXT @TERRAIN row 32
         [1, 2, 2, 2, 3],
     ],
 ];

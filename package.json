@@ -73,6 +73,7 @@
     "@civ-clone/base-terrain-mountains": "^0.1.0",
     "@civ-clone/base-terrain-ocean": "^0.1.0",
     "@civ-clone/base-terrain-plains": "^0.1.0",
+    "@civ-clone/base-terrain-properties": "^0.1.0",
     "@civ-clone/base-terrain-swamp": "^0.1.0",
     "@civ-clone/base-terrain-tundra": "^0.1.0",
     "@civ-clone/base-terrain-yield-food": "^0.1.0",

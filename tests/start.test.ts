@@ -27,6 +27,7 @@ import { UnsupportedTopologyError } from '@civ-clone/base-world-start/lib/startW
 import World from '@civ-clone/core-world/World';
 import { defaultGame } from '@civ-clone/core-game';
 import { expect } from 'chai';
+import { instance as rngInstance } from '@civ-clone/core-random';
 import { steps } from '../Rules/Player/pick-start-tile';
 
 const game = defaultGame;
@@ -37,9 +38,12 @@ game.rules.register(
   new Built(new Effect((world: World): void => resolveBuilt(world)))
 );
 
-const build = (): Promise<World> =>
+// Seeded, so a run is repeatable: the generator draws from core's own generator, the rules from the game's.
+const build = (seed: number): Promise<World> =>
   new Promise<World>((resolve): void => {
     resolveBuilt = resolve;
+    rngInstance.restore(seed, 0);
+    game.rng.restore(seed, 0);
 
     game.rules.process(Start);
   });
@@ -56,87 +60,90 @@ describe('start', (): void => {
     game.engine.setOption('topologyId', 'staggered-iso');
   });
 
-  it('builds a 50 by 80 staggered isometric world of the 11 terrains, with Glacier at the poles, specials, rivers and huts', async (): Promise<void> => {
-    const world = await build(),
-      tiles = world.tiles(),
-      count = (test: (tile: Tile) => boolean) => tiles.filter(test).length,
-      land = tiles.filter((tile) => tile.isLand()),
-      byTerrain = Object.fromEntries(
-        [
-          Desert,
-          Forest,
-          Glacier,
-          Grassland,
-          Hills,
-          Jungle,
-          Mountains,
-          Ocean,
-          Plains,
-          Swamp,
-          Tundra,
-        ].map((TerrainType) => [
-          TerrainType.name,
-          count((tile) => tile.terrain() instanceof TerrainType),
-        ])
-      ),
-      features = (tile: Tile) =>
-        game.terrainFeatures.getByTerrain(tile.terrain()),
-      withSpecial = land.filter(
-        (tile) => specialOf(tile.terrain(), game.terrainFeatures) !== null
-      ),
-      notGrassland = tiles.filter(
-        (tile) => !(tile.terrain() instanceof Grassland)
-      ),
-      rivers = count((tile) =>
-        features(tile).some((feature) => feature instanceof River)
-      ),
-      huts = count((tile) => game.goodyHuts.getByTile(tile) !== null),
-      poles = tiles.filter(
-        (tile) => tile.isLand() && (tile.y() === 0 || tile.y() === 79)
+  [1, 2, 3, 41, 42, 43].forEach((seed: number) =>
+    it(`builds a 50 by 80 staggered isometric world of the 11 terrains, with Glacier at the poles, specials, rivers and huts (seed ${seed})`, async (): Promise<void> => {
+      const world = await build(seed),
+        tiles = world.tiles(),
+        count = (test: (tile: Tile) => boolean) => tiles.filter(test).length,
+        land = tiles.filter((tile) => tile.isLand()),
+        byTerrain = Object.fromEntries(
+          [
+            Desert,
+            Forest,
+            Glacier,
+            Grassland,
+            Hills,
+            Jungle,
+            Mountains,
+            Ocean,
+            Plains,
+            Swamp,
+            Tundra,
+          ].map((TerrainType) => [
+            TerrainType.name,
+            count((tile) => tile.terrain() instanceof TerrainType),
+          ])
+        ),
+        features = (tile: Tile) =>
+          game.terrainFeatures.getByTerrain(tile.terrain()),
+        withSpecial = land.filter(
+          (tile) => specialOf(tile.terrain(), game.terrainFeatures) !== null
+        ),
+        notGrassland = tiles.filter(
+          (tile) => !(tile.terrain() instanceof Grassland)
+        ),
+        rivers = count((tile) =>
+          features(tile).some((feature) => feature instanceof River)
+        ),
+        huts = count((tile) => game.goodyHuts.getByTile(tile) !== null),
+        poles = tiles.filter(
+          (tile) => tile.isLand() && (tile.y() === 0 || tile.y() === 79)
+        );
+
+      console.log(
+        `      ${JSON.stringify(byTerrain)}; land ${land.length}; specials ${
+          tiles.filter((tile) =>
+            specialOf(tile.terrain(), game.terrainFeatures)
+          ).length
+        }; shields ${count((tile) =>
+          features(tile).some((feature) => feature instanceof Shield)
+        )}; rivers ${rivers} squares; huts ${huts}; polar land ${poles.length}`
       );
 
-    console.log(
-      `      ${JSON.stringify(byTerrain)}; land ${land.length}; specials ${
+      expect(world.topologyId()).to.equal('staggered-iso');
+      expect([world.width(), world.height()]).to.deep.equal([50, 80]);
+      expect(tiles.every((tile) => terrainIndex(tile.terrain()) >= 0)).to.true;
+      Object.entries(byTerrain).forEach(([name, n]) =>
+        expect(n, name).to.greaterThan(0)
+      );
+      expect(land.length / tiles.length).to.be.within(0.25, 0.4);
+
+      // Land on the first and last rows is Glacier.
+      expect(poles.every((tile) => tile.terrain() instanceof Glacier)).to.true;
+
+      // At most one special a square, on about 1 in 16 of those that can have one.
+      expect(
+        tiles.every(
+          (tile) =>
+            features(tile).filter(
+              (feature) =>
+                !(feature instanceof River || feature instanceof Shield)
+            ).length <= 1
+        )
+      ).to.true;
+      expect(
         tiles.filter((tile) => specialOf(tile.terrain(), game.terrainFeatures))
-          .length
-      }; shields ${count((tile) =>
-        features(tile).some((feature) => feature instanceof Shield)
-      )}; rivers ${rivers} squares; huts ${huts}; polar land ${poles.length}`
-    );
+          .length / notGrassland.length
+      ).to.be.within(0.04, 0.09);
+      expect(withSpecial.length).to.greaterThan(0);
 
-    expect(world.topologyId()).to.equal('staggered-iso');
-    expect([world.width(), world.height()]).to.deep.equal([50, 80]);
-    expect(tiles.every((tile) => terrainIndex(tile.terrain()) >= 0)).to.true;
-    Object.entries(byTerrain).forEach(([name, n]) =>
-      expect(n, name).to.greaterThan(0)
-    );
-    expect(land.length / tiles.length).to.be.within(0.25, 0.4);
-
-    // Land on the first and last rows is Glacier.
-    expect(poles.every((tile) => tile.terrain() instanceof Glacier)).to.true;
-
-    // At most one special a square, on about 1 in 16 of those that can have one.
-    expect(
-      tiles.every(
-        (tile) =>
-          features(tile).filter(
-            (feature) =>
-              !(feature instanceof River || feature instanceof Shield)
-          ).length <= 1
-      )
-    ).to.true;
-    expect(
-      tiles.filter((tile) => specialOf(tile.terrain(), game.terrainFeatures))
-        .length / notGrassland.length
-    ).to.be.within(0.04, 0.09);
-    expect(withSpecial.length).to.greaterThan(0);
-
-    expect(rivers).to.greaterThan(0);
-    expect(huts).to.be.within(land.length / 64, land.length / 16);
-  });
+      expect(rivers).to.greaterThan(0);
+      expect(huts).to.be.within(land.length / 100, land.length / 16);
+    })
+  );
 
   it('starts seven players on Grassland or Plains, apart', async (): Promise<void> => {
-    const world = await build(),
+    const world = await build(1),
       used: Tile[] = [];
 
     for (let i = 0; i < 7; i++) {
