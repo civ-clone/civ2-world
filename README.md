@@ -9,7 +9,10 @@ Civilization II's world, the twin of civ1-world:
   is made (huts, starts and the computer players' settlers read it), with +1 for each river square and the centre
   six times rather than four on a river; and `lib/hydro`, whether a city founded there may build a Hydro Plant (a
   river or Mountains on its square or beside it);
-- the tile improvements, Farmland, Fortress and Airbase among them, where each can be built, and what each takes off;
+- the tile improvements, Farmland, Fortress and Airbase among them, where each can be built (an Airbase with Radio;
+  Farmland waits for Refrigeration's effect), and what each takes off;
+- what an Engineers' transform makes of each terrain (`Rules/Terrain/conversion`, `TerrainConversion` rules from the
+  transform column), and the irrigation, farmland or mine a square loses when its new terrain isn't improved in place;
 - the tile yield steps: irrigation and mine bonuses, roads, railroads (shields only), the government's penalty and
   trade bonus, pollution;
 - the interim world generator's rules (simple-world-generator's bands, Glacier at the poles, a river walk afterwards),
