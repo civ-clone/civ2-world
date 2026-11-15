@@ -1,6 +1,7 @@
 import { Game, defaultGame } from '@civ-clone/core-game';
 import availableRequirements from './Requirements';
 import built from './Rules/TileImprovement/built';
+import conversion from './Rules/Terrain/conversion';
 import created from './Rules/Terrain/created';
 import { deriveAvailableRules } from './Rules/TileImprovement/available';
 import distribution from './Rules/Terrain/distribution';
@@ -12,6 +13,7 @@ import playerPickStartTile from './Rules/Player/pick-start-tile';
 import removed from './Rules/TileImprovement/removed';
 import start from './Rules/Engine/start';
 import terrainChanged from './Rules/Tile/terrain-changed';
+import terrainChangedImprovements from './Rules/Tile/terrain-changed-improvements';
 import tileYield from './Rules/Tile/yield';
 import tileYieldModifier from './Rules/Tile/yield-modifier';
 import worldBuilt from './Rules/World/built';
@@ -30,6 +32,7 @@ export const register = (game: Game): void => {
 
   game.rules.register(
     ...built(game.tileImprovements, game.engine),
+    ...conversion(),
     ...created(game.rules, game.availableTerrainFeatures),
     ...distribution(),
     ...distributionGroups(),
@@ -40,6 +43,7 @@ export const register = (game: Game): void => {
     ...playerPickStartTile(game.engine, game.rng),
     ...start(game.rules, game.engine),
     ...terrainChanged(game.terrainFeatures, game.players, game.rng),
+    ...terrainChangedImprovements(game.tileImprovements, game.rules),
     ...tileYield(game.tileImprovements, game.terrainFeatures),
     ...tileYieldModifier(game.tileImprovements, game.playerGovernments),
     ...worldBuilt(game.terrainFeatures, game.goodyHuts, game.rules, game.rng),
