@@ -10,6 +10,7 @@ import {
 import {
   BridgeBuilding,
   Construction,
+  Radio,
   Railroad as RailroadAdvance,
 } from '../Advances';
 import {
@@ -84,7 +85,7 @@ const land: (typeof Terrain)[] = [
 ];
 
 describe('tile-improvement:availability', (): void => {
-  it('has no way to build Farmland or an Airbase while Refrigeration and Radio are pending', (): void => {
+  it('has no way to build Farmland while Refrigeration is pending', (): void => {
     expect(
       availableRequirements.map((requirement) => requirement.id)
     ).to.deep.equal([
@@ -94,13 +95,29 @@ describe('tile-improvement:availability', (): void => {
       'civ2-world:tile-improvement/available/bridge/Road',
       'civ2-world:tile-improvement/available/Railroad',
       'civ2-world:tile-improvement/available/Fortress',
+      'civ2-world:tile-improvement/available/Airbase',
     ]);
     expect(
       availableRequirements.some(
-        (requirement) =>
-          requirement.subject === Farmland || requirement.subject === Airbase
+        (requirement) => requirement.subject === Farmland
       )
     ).to.false;
+  });
+
+  it('builds an airbase with Radio, but not on a fortress (`unit_cmd_terraform`)', async (): Promise<void> => {
+    const { can, research, ruleRegistry, world } = await setUp([
+        [[Hills], [Plains]],
+      ]),
+      [tile, fortified] = world.tiles();
+
+    expect(can(tile, Airbase)).to.false;
+
+    research.addAdvance(Radio);
+    research.addAdvance(Construction);
+    new Fortress(fortified, ruleRegistry);
+
+    expect(can(tile, Airbase)).to.true;
+    expect(can(fortified, Airbase)).to.false;
   });
 
   it('irrigates Desert, Plains, Grassland, Hills and Tundra beside water', async (): Promise<void> => {
