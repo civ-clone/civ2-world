@@ -1,6 +1,6 @@
 {
   "name": "@civ-clone/civ2-world",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "main": "index.js",
   "description": "Civilization II's world: its terrains, specials, rivers, tile improvements and their yields, where things can be built, the interim world generator's rules, huts, and where players start.",
   "repository": "git@github.com:civ-clone/civ2-world.git",
