@@ -19,6 +19,7 @@ import {
 } from '../Terrains';
 import { Food, Production, Trade } from '../Yields';
 import {
+  Farmland,
   Irrigation,
   Mine,
   Pollution,
@@ -141,6 +142,19 @@ describe('tile:yield', (): void => {
     expect(fst(world.get(2, 0))).to.deep.equal([2, 0, 4]);
     expect(fst(world.get(3, 0))).to.deep.equal([0, 5, 0]);
     expect(fst(world.get(4, 0))).to.deep.equal([0, 2, 0]);
+  });
+
+  // Farmland is the irrigation and mine bits together (0xc): the food bonus is for the irrigation bit, and the mine bonus
+  //  only for a mine without irrigation (`city.cpp` `city_tile_yield`: `(improv_bits & 0xc) == 8`). What Farmland adds
+  //  itself, +50% food with a Supermarket, is the city's.
+  it('keeps the irrigation bonus on Farmland, and gives it no mine bonus', async (): Promise<void> => {
+    const { build, fst, world } = await setUp([[[Hills], [Grassland]]]);
+
+    build(world.get(0, 0), Irrigation, Farmland);
+    build(world.get(1, 0), Irrigation, Farmland);
+
+    expect(fst(world.get(0, 0))).to.deep.equal([2, 0, 0]);
+    expect(fst(world.get(1, 0))).to.deep.equal([3, 0, 0]);
   });
 
   it('gives +1 trade for a river, on any terrain', async (): Promise<void> => {

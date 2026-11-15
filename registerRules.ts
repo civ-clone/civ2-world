@@ -25,7 +25,8 @@ export const register = (game: Game): void => {
     deriveAvailableRules(
       game.playerResearch,
       game.tileImprovements,
-      game.terrainFeatures
+      game.terrainFeatures,
+      game.cities
     ),
     ...availableRequirements
   );

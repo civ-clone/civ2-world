@@ -9,7 +9,6 @@ var Radio_1 = require("@civ-clone/base-science-advance-radio/Radio");
 Object.defineProperty(exports, "Radio", { enumerable: true, get: function () { return Radio_1.Radio; } });
 var Railroad_1 = require("@civ-clone/base-science-advance-railroad/Railroad");
 Object.defineProperty(exports, "Railroad", { enumerable: true, get: function () { return Railroad_1.Railroad; } });
-// An advance that is `null` here leaves a way to build something that needs it out of `Requirements`, so Farmland
-//  can't be built yet: it waits for the Supermarket's effect. Wiring it in is its one line.
-exports.Refrigeration = null;
+var Refrigeration_1 = require("@civ-clone/base-science-advance-refrigeration/Refrigeration");
+Object.defineProperty(exports, "Refrigeration", { enumerable: true, get: function () { return Refrigeration_1.Refrigeration; } });
 //# sourceMappingURL=Advances.js.map
