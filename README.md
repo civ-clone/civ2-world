@@ -10,7 +10,9 @@ Civilization II's world, the twin of civ1-world:
   six times rather than four on a river; and `lib/hydro`, whether a city founded there may build a Hydro Plant (a
   river or Mountains on its square or beside it);
 - the tile improvements, Farmland, Fortress and Airbase among them, where each can be built (an Airbase with Radio;
-  Farmland waits for Refrigeration's effect), and what each takes off;
+  Farmland with Refrigeration on an irrigated square that isn't a city's), and what each takes off. Farmland keeps its
+  square's Irrigation and the irrigation bonus, and gets no mine bonus. The orders that build them, `BuildFarmland`
+  among them (base-unit-action-build-farmland), and the turns each takes, are civ2-unit's;
 - what an Engineers' transform makes of each terrain (`Rules/Terrain/conversion`, `TerrainConversion` rules from the
   transform column), and the irrigation, farmland or mine a square loses when its new terrain isn't improved in place;
 - the tile yield steps: irrigation and mine bonuses, roads, railroads (shields only), the government's penalty and

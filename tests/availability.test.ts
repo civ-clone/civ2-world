@@ -12,6 +12,7 @@ import {
   Construction,
   Radio,
   Railroad as RailroadAdvance,
+  Refrigeration,
 } from '../Advances';
 import {
   Desert,
@@ -28,6 +29,7 @@ import {
 } from '../Terrains';
 import { Square, fixedWorld } from './lib/world';
 import Available from '@civ-clone/core-tile-improvement/Rules/Available';
+import CityRegistry from '@civ-clone/core-city/CityRegistry';
 import Player from '@civ-clone/core-player/Player';
 import PlayerResearch from '@civ-clone/core-science/PlayerResearch';
 import PlayerResearchRegistry from '@civ-clone/core-science/PlayerResearchRegistry';
@@ -50,7 +52,12 @@ const setUp = async (rows: Square[][]) => {
     playerResearchRegistry = new PlayerResearchRegistry(),
     world = await fixedWorld(rows, terrainFeatureRegistry, ruleRegistry),
     player = new Player(ruleRegistry),
-    research = new PlayerResearch(player);
+    research = new PlayerResearch(player),
+    // A stand-in: the rules only ask whether a square has a city.
+    cityTiles: Tile[] = [],
+    cityRegistry = {
+      getByTile: (tile: Tile) => (cityTiles.includes(tile) ? {} : null),
+    } as unknown as CityRegistry;
 
   playerResearchRegistry.register(research);
 
@@ -59,7 +66,8 @@ const setUp = async (rows: Square[][]) => {
     ...available(
       playerResearchRegistry,
       tileImprovementRegistry,
-      terrainFeatureRegistry
+      terrainFeatureRegistry,
+      cityRegistry
     )
   );
 
@@ -68,7 +76,14 @@ const setUp = async (rows: Square[][]) => {
       .get(Available)
       .some((rule: Available) => rule.validate(tile, Improvement, player));
 
-  return { can, research, ruleRegistry, tileImprovementRegistry, world };
+  return {
+    can,
+    cityTiles,
+    research,
+    ruleRegistry,
+    tileImprovementRegistry,
+    world,
+  };
 };
 
 const land: (typeof Terrain)[] = [
@@ -85,11 +100,12 @@ const land: (typeof Terrain)[] = [
 ];
 
 describe('tile-improvement:availability', (): void => {
-  it('has no way to build Farmland while Refrigeration is pending', (): void => {
+  it('has one way to build each tile improvement, and two for a road', (): void => {
     expect(
       availableRequirements.map((requirement) => requirement.id)
     ).to.deep.equal([
       'civ2-world:tile-improvement/available/Irrigation',
+      'civ2-world:tile-improvement/available/Farmland',
       'civ2-world:tile-improvement/available/Mine',
       'civ2-world:tile-improvement/available/Road',
       'civ2-world:tile-improvement/available/bridge/Road',
@@ -97,11 +113,57 @@ describe('tile-improvement:availability', (): void => {
       'civ2-world:tile-improvement/available/Fortress',
       'civ2-world:tile-improvement/available/Airbase',
     ]);
-    expect(
-      availableRequirements.some(
-        (requirement) => requirement.subject === Farmland
-      )
-    ).to.false;
+  });
+
+  it('builds Farmland on an irrigated square beside water, with Refrigeration (`unit_cmd_terraform`, order 6)', async (): Promise<void> => {
+    const { can, research, ruleRegistry, world } = await setUp([
+        [[Grassland], [Plains], [Mountains]],
+        [[Ocean], [Ocean], [Ocean]],
+      ]),
+      [grassland, plains] = world.tiles();
+
+    new Irrigation(grassland, ruleRegistry);
+
+    // Not before Refrigeration.
+    expect(can(grassland, Farmland)).to.false;
+
+    research.addAdvance(Refrigeration);
+
+    expect(can(grassland, Farmland)).to.true;
+    // Not on a square that isn't irrigated: the order irrigates it first.
+    expect(can(plains, Farmland)).to.false;
+    expect(can(plains, Irrigation)).to.true;
+
+    // Irrigation and Farmland are never both offered: the order does one or the other.
+    expect(can(grassland, Irrigation)).to.false;
+
+    new Farmland(grassland, ruleRegistry);
+
+    // Not twice.
+    expect(can(grassland, Farmland)).to.false;
+  });
+
+  it("doesn't build Farmland on a city's square, or where irrigation changes the terrain", async (): Promise<void> => {
+    const { can, cityTiles, research, ruleRegistry, world } = await setUp([
+        [[Grassland], [Mountains], [Forest]],
+        [[Ocean], [Ocean], [Ocean]],
+      ]),
+      city = world.get(0, 0),
+      forest = world.get(2, 0);
+
+    research.addAdvance(Refrigeration);
+
+    // A city's square is irrigated (civ2-city), but is never farmed (`unit_cmd_terraform` refuses a city's square).
+    [city, forest].forEach((tile) => new Irrigation(tile, ruleRegistry));
+    cityTiles.push(city);
+
+    expect(can(city, Farmland)).to.false;
+    // Beside the sea, but Forest's irrigation order makes Plains.
+    expect(can(forest, Farmland)).to.false;
+
+    cityTiles.splice(0);
+
+    expect(can(city, Farmland)).to.true;
   });
 
   it('builds an airbase with Radio, but not on a fortress (`unit_cmd_terraform`)', async (): Promise<void> => {
@@ -215,6 +277,9 @@ describe('tile-improvement:availability', (): void => {
     expect(can(tile, Fortress)).to.true;
   });
 
+  // Civ2 keeps a square's irrigation and mine as two bits, and farmland is both (`TILE_FARMLAND`, 0xc): a mine order on
+  //  farmland clears the irrigation bit and leaves a mine, an irrigation order on a mine clears the mine bit, and
+  //  farmland is built by setting both on an irrigated square (`unit.cpp` `unit_terrain_work_finish`, orders 6 and 7).
   it('takes the irrigation and farmland off for a mine, the mine for irrigation, an airbase for a fortress', async (): Promise<void> => {
     const { ruleRegistry, tileImprovementRegistry, world } = await setUp([
         [[Hills]],
