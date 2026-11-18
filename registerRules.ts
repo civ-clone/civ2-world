@@ -38,7 +38,7 @@ export const register = (game: Game): void => {
     ...distribution(),
     ...distributionGroups(),
     ...feature(game.terrainFeatures, game.rng),
-    ...goodyHutDistribution(game.goodyHuts, game.rng),
+    ...goodyHutDistribution(game.goodyHuts, game.rng, game.engine),
     ...pillaged(game.tileImprovements, game.engine),
     ...removed(game.tileImprovements, game.engine),
     ...playerPickStartTile(game.engine, game.rng),
@@ -47,8 +47,14 @@ export const register = (game: Game): void => {
     ...terrainChangedImprovements(game.tileImprovements, game.rules),
     ...tileYield(game.tileImprovements, game.terrainFeatures),
     ...tileYieldModifier(game.tileImprovements, game.playerGovernments),
-    ...worldBuilt(game.terrainFeatures, game.goodyHuts, game.rules, game.rng),
-    ...worldGeneratorPickGenerator(game.generators, game.rng)
+    ...worldBuilt(
+      game.terrainFeatures,
+      game.goodyHuts,
+      game.rules,
+      game.rng,
+      game.engine
+    ),
+    ...worldGeneratorPickGenerator(game.generators, game.rng, game.engine)
   );
 };
 

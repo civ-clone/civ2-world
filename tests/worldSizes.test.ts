@@ -18,15 +18,15 @@ const describeSize = (size: WorldSize) => [
 ];
 
 describe('world sizes', (): void => {
-  it("are Civilization II's three sizes on the staggered isometric grid, with 3 to 7 civilizations", (): void => {
+  it("are Civilization II's three sizes on the staggered isometric grid, with 3 to 7 civilizations, and Civilization II's Earth in each", (): void => {
     const registry = new WorldSizeRegistry();
 
     registry.register(...worldSizes());
 
     expect(registry.entries().map(describeSize)).eql([
-      ['small', 40, 50, 'staggered-iso', 3, 7, 7, false],
-      ['normal', 50, 80, 'staggered-iso', 3, 7, 7, false],
-      ['large', 75, 120, 'staggered-iso', 3, 7, 7, false],
+      ['small', 40, 50, 'staggered-iso', 3, 7, 7, true],
+      ['normal', 50, 80, 'staggered-iso', 3, 7, 7, true],
+      ['large', 75, 120, 'staggered-iso', 3, 7, 7, true],
     ]);
     expect(registry.entries().map((size) => size.width() * size.height())).eql([
       2000, 4000, 9000,

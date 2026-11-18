@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.customLimits = exports.worldSizes = exports.normal = exports.players = void 0;
+const civ2_earth_generator_1 = require("@civ-clone/civ2-earth-generator");
 const WorldSize_1 = require("@civ-clone/core-world-generator/WorldSize");
 // Civilization II's world sizes (`setup_choose_map_size`): Small, Normal and Large, each counted in squares across (half
 //  its doubled x) and rows down, on the staggered isometric grid. A game has from 3 to 7 civilizations whatever its size
@@ -20,6 +21,8 @@ exports.normal = dimensions.normal;
 const worldSizes = () => Object.entries(dimensions).map(([key, { width, height }]) => new WorldSize_1.default(key, width, height, {
     topologyId: 'staggered-iso',
     ...exports.players,
+    // Civilization II's own Earth comes in each size (civ2-earth-generator).
+    earth: (0, civ2_earth_generator_1.findEarthMap)(width, height) !== null,
 }));
 exports.worldSizes = worldSizes;
 /**

@@ -19,8 +19,14 @@ Civilization II's world, the twin of civ1-world:
   trade bonus, pollution;
 - the interim world generator's rules (simple-world-generator's bands, Glacier at the poles, a river walk afterwards),
   huts, the world's start (staggered isometric grids only), the generator choice and where players start;
+- Civilization II's own Earth (civ2-earth-generator), with the `earth` option: its terrain with Glacier at the poles,
+  its rivers, each tribe starting where the map starts it, and the specials, Grassland shields and huts placed from the
+  map's seed and each square's position, as the original places them (`lib/positional`, from `map.cpp`'s
+  `tile_resource`, `tile_grassland_has_shield` and `tile_has_hut`), with an ocean special out of every city's reach
+  hidden (`lib/earth`);
 - the world sizes a new game is offered (`WorldSizes`, registered with core-world-generator's `WorldSizeRegistry`):
-  Small 40 × 50, Normal 50 × 80 and Large 75 × 120, each with 3 to 7 civilizations (7 unless another number is chosen),
+  Small 40 × 50, Normal 50 × 80 and Large 75 × 120, each with 3 to 7 civilizations (7 unless another number is chosen)
+  and an Earth map,
   and a size typed in from 20 to 250 squares each way and 1,000 to 10,000 in all.
 
 The numbers are `RULES.TXT` `@TERRAIN`'s, held in `data/terrain.ts` as numbers only. Run

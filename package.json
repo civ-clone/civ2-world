@@ -96,6 +96,7 @@
     "@civ-clone/base-tile-improvement-road": "^0.1.0",
     "@civ-clone/base-unit-action-transform-terrain": "^0.1.0",
     "@civ-clone/base-world-start": "^0.1.0",
+    "@civ-clone/civ2-earth-generator": "github:civ-clone/civ2-earth-generator",
     "@civ-clone/civ2-rules": "github:civ-clone/civ2-rules",
     "@civ-clone/core-city": "^0.1.25",
     "@civ-clone/core-engine": "^0.1.0",

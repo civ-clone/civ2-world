@@ -1,3 +1,4 @@
+import { findEarthMap } from '@civ-clone/civ2-earth-generator';
 import WorldSize, {
   PlayerRange,
 } from '@civ-clone/core-world-generator/WorldSize';
@@ -28,6 +29,8 @@ export const worldSizes = (): WorldSize[] =>
       new WorldSize(key, width, height, {
         topologyId: 'staggered-iso',
         ...players,
+        // Civilization II's own Earth comes in each size (civ2-earth-generator).
+        earth: findEarthMap(width, height) !== null,
       })
   );
 
