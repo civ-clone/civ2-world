@@ -5,6 +5,7 @@ const Engine_1 = require("@civ-clone/core-engine/Engine");
 const RuleRegistry_1 = require("@civ-clone/core-rule/RuleRegistry");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
 const Start_1 = require("@civ-clone/core-engine/Rules/Start");
+const WorldSizes_1 = require("../../WorldSizes");
 const startWorld_1 = require("@civ-clone/base-world-start/lib/startWorld");
 /** Civilization II's maps are staggered isometric: specials, huts and rivers all follow its edges. */
 exports.topologyIds = ['staggered-iso'];
@@ -14,8 +15,8 @@ const getRules = (ruleRegistry = RuleRegistry_1.instance, engine = Engine_1.inst
             defaults: {
                 topologyId: 'staggered-iso',
                 // A normal map: 50 squares across (100 in Civilization II's doubled x) and 80 down, like `WORLD_M.MP`.
-                height: 80,
-                width: 50,
+                height: WorldSizes_1.normal.height,
+                width: WorldSizes_1.normal.width,
                 // A normal land mass (`mapgen_place_landmasses`: about 1,280 of 4,000 squares), taking the encoding of
                 //  "normal" as 0, which isn't confirmed.
                 landCoverage: 0.32,
