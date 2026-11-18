@@ -4,7 +4,13 @@ import {
 } from '@civ-clone/core-engine/Engine';
 import { Food, Production, Trade } from '../../Yields';
 import { Grassland, Plains } from '../../Terrains';
+import { startTileOn, startTilesOn } from '@civ-clone/civ2-earth-generator';
+import {
+  GoodyHutRegistry,
+  instance as goodyHutRegistryInstance,
+} from '@civ-clone/core-goody-hut/GoodyHutRegistry';
 import Effect from '@civ-clone/core-rule/Effect';
+import { earthMapOf } from '../../lib/earth';
 import PickStartTile from '@civ-clone/core-world-generator/Rules/PickStartTile';
 import Player from '@civ-clone/core-player/Player';
 import StartTilePicker from '@civ-clone/base-world-start/lib/StartTilePicker';
@@ -42,24 +48,57 @@ const picker = new StartTilePicker({
 
 export const getRules = (
   engine: Engine = engineInstance,
-  randomNumberGenerator: () => number = rngInstance
+  randomNumberGenerator: () => number = rngInstance,
+  goodyHutRegistry: GoodyHutRegistry = goodyHutRegistryInstance
 ): PickStartTile[] => [
   new PickStartTile(
     new Effect(
       (world: World, player: Player, usedStartSquares: Tile[]): Tile => {
+        // On Earth, where the map starts the player's tribe, as the original does with the map's start positions, when
+        //  that square is still free; elsewhere, as on any map, away from them all.
+        //  Those starts are kept clear of without being taken from the tribes still to choose theirs.
+        //  A square a tribe starts on is theirs from then on, and the original puts no hut on a square anyone owns
+        //  (`tile_has_hut`), so one the seed put there is taken away.
+        const map = earthMapOf(world, engine),
+          owned = (tile: Tile | undefined): Tile | undefined => {
+            const hut =
+              map !== null && tile !== undefined
+                ? goodyHutRegistry.getByTile(tile)
+                : null;
+
+            if (hut !== null) {
+              goodyHutRegistry.unregister(hut);
+            }
+
+            return tile;
+          };
+        let used = usedStartSquares;
+
+        if (map !== null) {
+          const start = startTileOn(map, player.civilization().sourceClass());
+
+          if (start !== null) {
+            const tile = world.get(start.x, start.y);
+
+            if (!usedStartSquares.includes(tile)) {
+              return owned(tile)!;
+            }
+          }
+
+          used = [
+            ...usedStartSquares,
+            ...startTilesOn(map).map(({ x, y }) => world.get(x, y)),
+          ];
+        }
+
         const pick = (candidate: number): Tile => {
           spacing = candidate;
 
-          return picker.pick(
-            world,
-            usedStartSquares,
-            engine,
-            randomNumberGenerator
-          );
+          return picker.pick(world, used, engine, randomNumberGenerator);
         };
 
         // The closest spacing's pick, if even that finds nothing, is `undefined`, as base-world-start's is.
-        return (
+        return owned(
           spacings
             .slice(0, -1)
             .reduce<Tile | undefined>(
@@ -67,7 +106,7 @@ export const getRules = (
                 found ?? pick(candidate),
               undefined
             ) ?? pick(spacings[spacings.length - 1])
-        );
+        )!;
       }
     )
   ),

@@ -16,6 +16,12 @@ import TerrainChanged from '@civ-clone/core-world/Rules/TerrainChanged';
 import TerrainFeature from '@civ-clone/core-terrain-feature/TerrainFeature';
 import replaceFeatures from '@civ-clone/base-terrain-feature/lib/replaceFeatures';
 import { instance as rngInstance } from '@civ-clone/core-random';
+import {
+  Engine,
+  instance as engineInstance,
+} from '@civ-clone/core-engine/Engine';
+import { earthMapOf, seededShield, seededSpecial } from '../../lib/earth';
+import { GRASSLAND } from '../../data/terrain';
 import { shieldRule } from '../Terrain/feature';
 
 export const FEATURES = 'civ2-world:terrain-changed/features';
@@ -29,7 +35,9 @@ export const CLEAR_YIELD_CACHE = 'civ2-world:terrain-changed/clear-yield-cache';
  *  - a special stays in its slot: a Forest's Pheasant (its first) is a Plains' Buffalo, its Silk (its second) Wheat;
  *    on Grassland, which has none, it's gone;
  *  - a square with no special gets none;
- *  - a square that becomes Grassland rolls for its shield once, here, at the odds a Grassland is made with.
+ *  - a square that becomes Grassland rolls for its shield once, here, at the odds a Grassland is made with;
+ *  - on Earth, the new terrain's special and shield are where the map's seed puts them for the square, as the original
+ *    works them out from the square's position whenever it asks (`lib/earth`), with nothing rolled.
  *
  * The new terrain was made for this change, so everything on it was rolled for it: by its `Created` rules, and, for a
  *  cleared Jungle or Swamp, by the conversion action's own Shield roll as well. All of it is taken off first, or a
@@ -38,7 +46,8 @@ export const CLEAR_YIELD_CACHE = 'civ2-world:terrain-changed/clear-yield-cache';
 export const getRules = (
   terrainFeatureRegistry: TerrainFeatureRegistry = terrainFeatureRegistryInstance,
   playerRegistry: PlayerRegistry = playerRegistryInstance,
-  randomNumberGenerator: () => number = rngInstance
+  randomNumberGenerator: () => number = rngInstance,
+  engine: Engine = engineInstance
 ): TerrainChanged[] => {
   // Built on the registry these rules move features in, so the shield can never land in another one.
   const shield = shieldRule(terrainFeatureRegistry, randomNumberGenerator);
@@ -52,14 +61,23 @@ export const getRules = (
           (
             features: TerrainFeature[],
             to: Terrain,
-            from: Terrain
+            from: Terrain,
+            tile: Tile
           ): TerrainFeature[] => {
             const toIndex = terrainIndex(to),
-              special = specialOf(from, terrainFeatureRegistry),
+              map = earthMapOf(tile.map(), engine),
+              slot =
+                map === null
+                  ? specialOf(from, terrainFeatureRegistry)?.[1] ?? 0
+                  : seededSpecial(tile, map.seed),
               NewSpecial =
-                special && toIndex >= 0
-                  ? specialTypes[special[1] - 1][toIndex]
+                slot !== 0 && toIndex >= 0
+                  ? specialTypes[slot - 1][toIndex]
                   : null,
+              hasShield =
+                map === null
+                  ? shield.validate(Shield, to)
+                  : toIndex === GRASSLAND && seededShield(tile),
               rolled = terrainFeatureRegistry.getByTerrain(to);
 
             if (rolled.length > 0) {
@@ -73,7 +91,7 @@ export const getRules = (
                 )
                 .map((feature: TerrainFeature) => feature.clone(to)),
               ...(NewSpecial ? [new NewSpecial(to)] : []),
-              ...(shield.validate(Shield, to) ? [new Shield(to)] : []),
+              ...(hasShield ? [new Shield(to)] : []),
             ];
           }
         )
