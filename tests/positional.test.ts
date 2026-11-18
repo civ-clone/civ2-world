@@ -53,6 +53,13 @@ describe('shieldAt', (): void => {
 });
 
 describe('hutAt', (): void => {
+  it("is the original's formula", (): void => {
+    // (0, 0): u = v = 0, so 0 against (0 + 0 + seed + 8) & 31: a hut for seed 24, not 25.
+    expect([hutAt(0, 0, 24), hutAt(0, 0, 25)]).eql([true, false]);
+    // (0, 2): u = 1, v = -1: 1 + 3 × 4 = 13, against (0 + (-1 >> 2) × 13 + seed + 8) & 31 = (seed - 5) & 31: seed 18.
+    expect([hutAt(0, 2, 18), hutAt(0, 2, 19)]).eql([true, false]);
+  });
+
   it('gives one square in 32 a hut', (): void => {
     [1, 33, 40].forEach((seed): void => {
       expect(

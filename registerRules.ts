@@ -41,9 +41,14 @@ export const register = (game: Game): void => {
     ...goodyHutDistribution(game.goodyHuts, game.rng, game.engine),
     ...pillaged(game.tileImprovements, game.engine),
     ...removed(game.tileImprovements, game.engine),
-    ...playerPickStartTile(game.engine, game.rng),
+    ...playerPickStartTile(game.engine, game.rng, game.goodyHuts),
     ...start(game.rules, game.engine),
-    ...terrainChanged(game.terrainFeatures, game.players, game.rng),
+    ...terrainChanged(
+      game.terrainFeatures,
+      game.players,
+      game.rng,
+      game.engine
+    ),
     ...terrainChangedImprovements(game.tileImprovements, game.rules),
     ...tileYield(game.tileImprovements, game.terrainFeatures),
     ...tileYieldModifier(game.tileImprovements, game.playerGovernments),

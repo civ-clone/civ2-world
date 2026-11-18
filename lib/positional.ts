@@ -41,7 +41,7 @@ export const shieldAt = (x: number, y: number): boolean =>
   ((-((x + y) >> 1) - x) & 2) === 0;
 
 /**
- * Whether a land square at doubled (`x`, `y`), with no unit or city on it, has a hut (`tile_has_hut`): one square in
+ * Whether a land square at doubled (`x`, `y`) that nobody owns yet has a hut (`tile_has_hut`): one square in
  *  each 4 by 4 block of the map's diagonals, in every other block, where the seed says.
  */
 export const hutAt = (x: number, y: number, seed: number): boolean => {

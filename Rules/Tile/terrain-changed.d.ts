@@ -1,6 +1,7 @@
 import { TerrainFeatureRegistry } from '@civ-clone/core-terrain-feature/TerrainFeatureRegistry';
 import { PlayerRegistry } from '@civ-clone/core-player/PlayerRegistry';
 import TerrainChanged from '@civ-clone/core-world/Rules/TerrainChanged';
+import { Engine } from '@civ-clone/core-engine/Engine';
 export declare const FEATURES = 'civ2-world:terrain-changed/features';
 export declare const CLEAR_YIELD_CACHE =
   'civ2-world:terrain-changed/clear-yield-cache';
@@ -12,7 +13,9 @@ export declare const CLEAR_YIELD_CACHE =
  *  - a special stays in its slot: a Forest's Pheasant (its first) is a Plains' Buffalo, its Silk (its second) Wheat;
  *    on Grassland, which has none, it's gone;
  *  - a square with no special gets none;
- *  - a square that becomes Grassland rolls for its shield once, here, at the odds a Grassland is made with.
+ *  - a square that becomes Grassland rolls for its shield once, here, at the odds a Grassland is made with;
+ *  - on Earth, the new terrain's special and shield are where the map's seed puts them for the square, as the original
+ *    works them out from the square's position whenever it asks (`lib/earth`), with nothing rolled.
  *
  * The new terrain was made for this change, so everything on it was rolled for it: by its `Created` rules, and, for a
  *  cleared Jungle or Swamp, by the conversion action's own Shield roll as well. All of it is taken off first, or a
@@ -21,6 +24,7 @@ export declare const CLEAR_YIELD_CACHE =
 export declare const getRules: (
   terrainFeatureRegistry?: TerrainFeatureRegistry,
   playerRegistry?: PlayerRegistry,
-  randomNumberGenerator?: () => number
+  randomNumberGenerator?: () => number,
+  engine?: Engine
 ) => TerrainChanged[];
 export default getRules;
