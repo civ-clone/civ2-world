@@ -60,7 +60,7 @@ export const getRules = (
         //  A square a tribe starts on is theirs from then on, and the original puts no hut on a square anyone owns
         //  (`tile_has_hut`), so one the seed put there is taken away.
         const map = earthMapOf(world, engine),
-          owned = (tile: Tile | undefined): Tile => {
+          owned = (tile: Tile | undefined): Tile | undefined => {
             const hut =
               map !== null && tile !== undefined
                 ? goodyHutRegistry.getByTile(tile)
@@ -70,7 +70,7 @@ export const getRules = (
               goodyHutRegistry.unregister(hut);
             }
 
-            return tile!;
+            return tile;
           };
         let used = usedStartSquares;
 
@@ -81,7 +81,7 @@ export const getRules = (
             const tile = world.get(start.x, start.y);
 
             if (!usedStartSquares.includes(tile)) {
-              return owned(tile);
+              return owned(tile)!;
             }
           }
 
@@ -106,7 +106,7 @@ export const getRules = (
                 found ?? pick(candidate),
               undefined
             ) ?? pick(spacings[spacings.length - 1])
-        );
+        )!;
       }
     )
   ),

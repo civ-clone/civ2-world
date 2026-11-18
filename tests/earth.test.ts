@@ -64,6 +64,7 @@ const build = (width: number, height: number): Promise<World> =>
 describe('Earth', (): void => {
   afterEach((): void => {
     game.engine.setOption('earth', false);
+    game.engine.setOption('topologyId', 'staggered-iso');
     game.engine.setOption('width', 50);
     game.engine.setOption('height', 80);
   });
