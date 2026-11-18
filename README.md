@@ -18,7 +18,10 @@ Civilization II's world, the twin of civ1-world:
 - the tile yield steps: irrigation and mine bonuses, roads, railroads (shields only), the government's penalty and
   trade bonus, pollution;
 - the interim world generator's rules (simple-world-generator's bands, Glacier at the poles, a river walk afterwards),
-  huts, the world's start (staggered isometric grids only), the generator choice and where players start.
+  huts, the world's start (staggered isometric grids only), the generator choice and where players start;
+- the world sizes a new game is offered (`WorldSizes`, registered with core-world-generator's `WorldSizeRegistry`):
+  Small 40 × 50, Normal 50 × 80 and Large 75 × 120, each with 3 to 7 civilizations (7 unless another number is chosen),
+  and a size typed in from 20 to 250 squares each way and 1,000 to 10,000 in all.
 
 The numbers are `RULES.TXT` `@TERRAIN`'s, held in `data/terrain.ts` as numbers only. Run
 `CIV2_PATH=/path/to/civ2 npm test` to check them against your own copy of the game.
