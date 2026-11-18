@@ -1,39 +1,53 @@
 import '../registerWorldSizes';
+import WorldSizeRegistry, {
+  instance as worldSizeRegistryInstance,
+} from '@civ-clone/core-world-generator/WorldSizeRegistry';
 import { customLimits, normal, worldSizes } from '../WorldSizes';
+import WorldSize from '@civ-clone/core-world-generator/WorldSize';
 import { expect } from 'chai';
-import { instance as worldSizeRegistryInstance } from '@civ-clone/core-world-generator/WorldSizeRegistry';
+
+const describeSize = (size: WorldSize) => [
+  size.key(),
+  size.width(),
+  size.height(),
+  size.topologyId(),
+  size.minPlayers(),
+  size.maxPlayers(),
+  size.players(),
+  size.earth(),
+];
 
 describe('world sizes', (): void => {
-  it("offers Civilization II's three sizes on the staggered isometric grid, with 3 to 7 civilizations", (): void => {
-    expect(
-      worldSizeRegistryInstance
-        .entries()
-        .map((size) => [
-          size.key(),
-          size.width(),
-          size.height(),
-          size.topologyId(),
-          size.minPlayers(),
-          size.maxPlayers(),
-          size.players(),
-          size.earth(),
-        ])
-    ).eql([
+  it("are Civilization II's three sizes on the staggered isometric grid, with 3 to 7 civilizations", (): void => {
+    const registry = new WorldSizeRegistry();
+
+    registry.register(...worldSizes());
+
+    expect(registry.entries().map(describeSize)).eql([
       ['small', 40, 50, 'staggered-iso', 3, 7, 7, false],
       ['normal', 50, 80, 'staggered-iso', 3, 7, 7, false],
       ['large', 75, 120, 'staggered-iso', 3, 7, 7, false],
     ]);
-  });
-
-  it("has the same squares in all as Civilization II's sizes", (): void => {
-    expect(worldSizes().map((size) => size.width() * size.height())).eql([
+    expect(registry.entries().map((size) => size.width() * size.height())).eql([
       2000, 4000, 9000,
     ]);
   });
 
-  it('allows a size typed in from 20 to 250 squares each way, and 1,000 to 10,000 in all', (): void => {
+  it('are registered, with the bounds of a size typed in, once civ2-world is imported', (): void => {
+    expect(
+      ['small', 'normal', 'large'].map(
+        (key) => worldSizeRegistryInstance.getByKey(key)?.width() ?? null
+      )
+    ).eql([40, 50, 75]);
     expect(worldSizeRegistryInstance.customLimits()).eql(customLimits);
-    expect(customLimits).include({
+  });
+
+  it('allow a size typed in from 20 to 250 squares each way, and 1,000 to 10,000 in all', (): void => {
+    const registry = new WorldSizeRegistry();
+
+    registry.setCustomLimits(customLimits);
+
+    expect(registry.customLimits()).include({
       topologyId: 'staggered-iso',
       minWidth: 20,
       maxWidth: 250,
@@ -47,9 +61,20 @@ describe('world sizes', (): void => {
     });
   });
 
-  it('starts a world at the normal size unless the game says otherwise', (): void => {
+  it('start a world at the normal size unless the game says otherwise', (): void => {
     const size = worldSizeRegistryInstance.getByKey('normal')!;
 
     expect(normal).eql({ width: size.width(), height: size.height() });
+    expect(Object.isFrozen(normal)).true;
+  });
+
+  it('are registered once when the module runs again', (): void => {
+    const registered = worldSizeRegistryInstance.entries().length;
+
+    delete require.cache[require.resolve('../registerWorldSizes')];
+    delete require.cache[require.resolve('../WorldSizes')];
+    require('../registerWorldSizes');
+
+    expect(worldSizeRegistryInstance.entries().length).equal(registered);
   });
 });
