@@ -18,7 +18,8 @@ Civilization II's world, the twin of civ1-world:
 - the tile yield steps: irrigation and mine bonuses, roads, railroads (shields only), the government's penalty and
   trade bonus, pollution;
 - the interim world generator's rules (simple-world-generator's bands, Glacier at the poles, a river walk afterwards),
-  huts, the world's start (staggered isometric grids only), the generator choice and where players start;
+  huts, the world's start (on Civilization II's staggered isometric grid by default, or the square or hexagonal
+  grid), the generator choice and where players start;
 - Civilization II's own Earth (civ2-earth-generator), with the `earth` option: its terrain with Glacier at the poles,
   its rivers, each tribe starting where the map starts it, and the specials, Grassland shields and huts placed from the
   map's seed and each square's position, as the original places them (`lib/positional`, from `map.cpp`'s

@@ -23,7 +23,6 @@ import PickStartTile from '@civ-clone/core-world-generator/Rules/PickStartTile';
 import Player from '@civ-clone/core-player/Player';
 import Start from '@civ-clone/core-engine/Rules/Start';
 import Tile from '@civ-clone/core-world/Tile';
-import { UnsupportedTopologyError } from '@civ-clone/base-world-start/lib/startWorld';
 import World from '@civ-clone/core-world/World';
 import { defaultGame } from '@civ-clone/core-game';
 import { expect } from 'chai';
@@ -49,16 +48,60 @@ const build = (seed: number): Promise<World> =>
   });
 
 describe('start', (): void => {
-  it("refuses any grid but Civilization II's", (): void => {
-    game.engine.setOption('topologyId', 'square');
+  // Civilization's own sizes on its square and hexagonal grids (civ-clone/web-renderer#1249): the same world, by each
+  //  grid's own edges.
+  (
+    [
+      ['square', 80, 50],
+      ['hex-odd-r', 74, 54],
+    ] as const
+  ).forEach(([topologyId, width, height]) =>
+    [1, 41].forEach((seed: number) =>
+      it(`builds a ${width} by ${height} ${topologyId} world of Civilization II's terrains, with specials, rivers and huts (seed ${seed})`, async (): Promise<void> => {
+        game.engine.setOption('topologyId', topologyId);
+        game.engine.setOption('width', width);
+        game.engine.setOption('height', height);
 
-    expect(() => game.rules.process(Start)).to.throw(
-      UnsupportedTopologyError,
-      "start: 'topologyId' is 'square', but this world can only be laid out on 'staggered-iso'."
-    );
+        let world: World;
 
-    game.engine.setOption('topologyId', 'staggered-iso');
-  });
+        try {
+          world = await build(seed);
+        } finally {
+          game.engine.setOption('topologyId', 'staggered-iso');
+          game.engine.setOption('width', 50);
+          game.engine.setOption('height', 80);
+        }
+
+        const tiles = world.tiles(),
+          land = tiles.filter((tile) => tile.isLand()),
+          count = (test: (tile: Tile) => boolean) => tiles.filter(test).length;
+
+        expect(world.topologyId()).to.equal(topologyId);
+        expect([world.width(), world.height()]).to.deep.equal([width, height]);
+        expect(tiles.every((tile) => terrainIndex(tile.terrain()) >= 0)).to
+          .true;
+        expect(land.length / tiles.length).to.be.within(0.25, 0.4);
+        expect(
+          count((tile) => tile.terrain() instanceof Glacier)
+        ).to.greaterThan(0);
+        expect(
+          count(
+            (tile) => specialOf(tile.terrain(), game.terrainFeatures) !== null
+          ) / land.length
+        ).to.be.within(0.1, 0.25);
+        expect(
+          count((tile) =>
+            game.terrainFeatures
+              .getByTerrain(tile.terrain())
+              .some((feature) => feature instanceof River)
+          )
+        ).to.greaterThan(0);
+        expect(
+          count((tile) => game.goodyHuts.getByTile(tile) !== null)
+        ).to.be.within(land.length / 100, land.length / 16);
+      })
+    )
+  );
 
   [1, 2, 3, 41, 42, 43].forEach((seed: number) =>
     it(`builds a 50 by 80 staggered isometric world of the 11 terrains, with Glacier at the poles, specials, rivers and huts (seed ${seed})`, async (): Promise<void> => {

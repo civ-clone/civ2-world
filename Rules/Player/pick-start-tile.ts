@@ -27,7 +27,7 @@ export const minimumRoom = 32;
 
 export const spacings = [16, 12, 8, 6, 4, 2, 1];
 
-/** Map distance: steps on the grid (`map_distance`, `steps` on the staggered isometric grid). */
+/** Map distance: steps on the grid (`map_distance`, `steps` on the world's own grid). */
 export const steps = (from: Tile, to: Tile): number =>
   from.map().topology().steps(from.x(), from.y(), to.x(), to.y());
 
