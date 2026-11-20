@@ -17,7 +17,7 @@ const core_random_1 = require("@civ-clone/core-random");
 //  relaxes that as its attempts run out; this asks for each of `spacings` in turn.
 exports.minimumRoom = 32;
 exports.spacings = [16, 12, 8, 6, 4, 2, 1];
-/** Map distance: steps on the grid (`map_distance`, `steps` on the staggered isometric grid). */
+/** Map distance: steps on the grid (`map_distance`, `steps` on the world's own grid). */
 const steps = (from, to) => from.map().topology().steps(from.x(), from.y(), to.x(), to.y());
 exports.steps = steps;
 let spacing = exports.spacings[0];
