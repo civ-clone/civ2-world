@@ -11,8 +11,12 @@ import Start from '@civ-clone/core-engine/Rules/Start';
 import { normal } from '../../WorldSizes';
 import startWorld from '@civ-clone/base-world-start/lib/startWorld';
 
-/** Civilization II's maps are staggered isometric: specials, huts and rivers all follow its edges. */
-export const topologyIds = ['staggered-iso'];
+/**
+ * The grids a world can be laid out on: Civilization II's own staggered isometric grid, its default, and the square and
+ *  hexagonal grids, which the generator, rivers, specials and huts all follow by the grid's own edges
+ *  (civ-clone/web-renderer#1249). Its Earth is always on its own grid (civ2-earth-generator).
+ */
+export const topologyIds = ['staggered-iso', 'square', 'hex-odd-r'];
 
 export const getRules = (
   ruleRegistry: RuleRegistry = ruleRegistryInstances,
