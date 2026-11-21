@@ -25,14 +25,30 @@ import {
   totalOf,
 } from '@civ-clone/base-tile-improvement/lib/yieldModifiers';
 import Criterion from '@civ-clone/core-rule/Criterion';
+import Description from '@civ-clone/core-rule/Description';
 import Effect from '@civ-clone/core-rule/Effect';
 import Player from '@civ-clone/core-player/Player';
 import PlayerGovernment from '@civ-clone/core-government/PlayerGovernment';
 import Priority from '@civ-clone/core-rule/Priority';
+import Terrain from '@civ-clone/core-terrain/Terrain';
 import Tile from '@civ-clone/core-world/Tile';
 import Yield from '@civ-clone/core-yield/Yield';
 import YieldModifier from '@civ-clone/core-world/Rules/YieldModifier';
 import { hasImprovement } from '@civ-clone/base-tile-improvement/lib/lifecycle';
+import { landTerrains } from '../../Requirements';
+
+/** The trade a road adds. */
+export const ROAD_TRADE = 1;
+
+/** The terrains a road always adds trade on; elsewhere it adds trade only to a square already making some. */
+export const roadTradeTerrains: (typeof Terrain)[] = [
+  Desert,
+  Grassland,
+  Plains,
+];
+
+/** What a railroad adds to a square's shields: half again, rounded down. */
+export const RAILROAD_PRODUCTION = 0.5;
 
 /** The road's trade comes before the railroad (`High`), once the river's trade is in. */
 export const roadPriority = new Priority(500);
@@ -54,20 +70,41 @@ export const getRules = (
     new Criterion(hasImprovement(tileImprovementRegistry, Road)),
     new Criterion(
       (tile: Tile, player: Player | null, yields: Yield[]): boolean =>
-        [Desert, Grassland, Plains].some(
+        roadTradeTerrains.some(
           (TerrainType) => tile.terrain() instanceof TerrainType
         ) || totalOf(yields, Trade) > 0
     ),
     new Effect((tile: Tile, player: Player | null, yields: Yield[]): void => {
-      yields.push(new Trade(1, Road.name));
-    })
+      yields.push(new Trade(ROAD_TRADE, Road.name));
+    }),
+    // For the Civilopedia (civ-clone/web-renderer#620): the terrains it always adds trade on. A square already making
+    //  trade (Ocean, a river, a special) is the square's matter, not its terrain's.
+    new Description(
+      ...roadTradeTerrains.map((TerrainType: typeof Terrain) => ({
+        type: 'improvement_yield',
+        subject: TerrainType,
+        yield: Trade,
+        value: ROAD_TRADE,
+        improvement: Road,
+      }))
+    )
   ),
 
   new YieldModifier(
     new High(),
     new Criterion(hasYield(Production)),
     new Criterion(hasImprovement(tileImprovementRegistry, Railroad)),
-    new Effect(addMultiple(Production, 0.5, Railroad.name))
+    new Effect(addMultiple(Production, RAILROAD_PRODUCTION, Railroad.name)),
+    // On every terrain a railroad can be built on (civ2-world's `Requirements`).
+    new Description(
+      ...landTerrains.map((TerrainType: typeof Terrain) => ({
+        type: 'improvement_yield_percent',
+        subject: TerrainType,
+        yield: Production,
+        value: RAILROAD_PRODUCTION,
+        improvement: Railroad,
+      }))
+    )
   ),
 
   ...(
