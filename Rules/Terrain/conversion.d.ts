@@ -5,7 +5,8 @@ export declare const transformTable: [typeof Terrain, typeof Terrain][];
 /**
  * What an Engineers' transform makes of each terrain (`unit.cpp` `unit_terrain_work_finish`, order 8: the terrain's
  *  `transform_to`), as base-unit-action-transform-terrain's `TerrainConversion` rules, `civ2-world:terrain/conversion/
- *  transform/<terrain>`. Ocean has no transform, so it has no rule.
+ *  transform/<terrain>`. Ocean has no transform, so it has no rule. Each says what it makes, for the Civilopedia
+ *  (civ-clone/web-renderer#620).
  */
 export declare const getRules: () => TerrainConversion[];
 export default getRules;

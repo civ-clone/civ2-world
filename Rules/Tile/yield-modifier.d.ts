@@ -1,7 +1,14 @@
 import { PlayerGovernmentRegistry } from '@civ-clone/core-government/PlayerGovernmentRegistry';
 import { TileImprovementRegistry } from '@civ-clone/core-tile-improvement/TileImprovementRegistry';
 import Priority from '@civ-clone/core-rule/Priority';
+import Terrain from '@civ-clone/core-terrain/Terrain';
 import YieldModifier from '@civ-clone/core-world/Rules/YieldModifier';
+/** The trade a road adds. */
+export declare const ROAD_TRADE = 1;
+/** The terrains a road always adds trade on; elsewhere it adds trade only to a square already making some. */
+export declare const roadTradeTerrains: (typeof Terrain)[];
+/** What a railroad adds to a square's shields: half again, rounded down. */
+export declare const RAILROAD_PRODUCTION = 0.5;
 /** The road's trade comes before the railroad (`High`), once the river's trade is in. */
 export declare const roadPriority: Priority;
 /**

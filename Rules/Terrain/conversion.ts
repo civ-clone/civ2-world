@@ -1,6 +1,8 @@
+import Description from '@civ-clone/core-rule/Description';
 import Terrain from '@civ-clone/core-terrain/Terrain';
 import TerrainConversion from '@civ-clone/base-unit-action-transform-terrain/Rules/TerrainConversion';
 import TransformTerrain from '@civ-clone/base-unit-action-transform-terrain/TransformTerrain';
+import { describedRule } from '../../lib/describedRule';
 import { terrainConversions } from '@civ-clone/base-unit-action-transform-terrain/lib/conversion';
 import { transform } from '../../lib/terrainProperties';
 
@@ -13,9 +15,24 @@ export const transformTable: [typeof Terrain, typeof Terrain][] =
 /**
  * What an Engineers' transform makes of each terrain (`unit.cpp` `unit_terrain_work_finish`, order 8: the terrain's
  *  `transform_to`), as base-unit-action-transform-terrain's `TerrainConversion` rules, `civ2-world:terrain/conversion/
- *  transform/<terrain>`. Ocean has no transform, so it has no rule.
+ *  transform/<terrain>`. Ocean has no transform, so it has no rule. Each says what it makes, for the Civilopedia
+ *  (civ-clone/web-renderer#620).
  */
 export const getRules = (): TerrainConversion[] =>
-  terrainConversions('civ2-world', TransformTerrain.kind, transformTable);
+  terrainConversions('civ2-world', TransformTerrain.kind, transformTable).map(
+    (rule: TerrainConversion, index: number): TerrainConversion => {
+      const [From, To] = transformTable[index];
+
+      return describedRule(
+        rule,
+        new Description({
+          type: 'converts_to',
+          subject: From,
+          terrain: To,
+          improvement: TransformTerrain,
+        })
+      );
+    }
+  );
 
 export default getRules;
