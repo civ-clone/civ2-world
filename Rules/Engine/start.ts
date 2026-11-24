@@ -6,6 +6,10 @@ import {
   RuleRegistry,
   instance as ruleRegistryInstances,
 } from '@civ-clone/core-rule/RuleRegistry';
+import {
+  LandMassRegistry,
+  instance as landMassRegistryInstance,
+} from '@civ-clone/core-world/LandMassRegistry';
 import Effect from '@civ-clone/core-rule/Effect';
 import Start from '@civ-clone/core-engine/Rules/Start';
 import { normal } from '../../WorldSizes';
@@ -20,11 +24,13 @@ export const topologyIds = ['staggered-iso', 'square', 'hex-odd-r'];
 
 export const getRules = (
   ruleRegistry: RuleRegistry = ruleRegistryInstances,
-  engine: Engine = engineInstance
+  engine: Engine = engineInstance,
+  landMassRegistry: LandMassRegistry = landMassRegistryInstance
 ): Start[] => [
   new Start(
     new Effect((): void => {
       startWorld(ruleRegistry, engine, {
+        landMassRegistry,
         defaults: {
           topologyId: 'staggered-iso',
           // A normal map: 50 squares across (100 in Civilization II's doubled x) and 80 down, like `WORLD_M.MP`.
