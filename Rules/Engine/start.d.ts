@@ -1,5 +1,6 @@
 import { Engine } from '@civ-clone/core-engine/Engine';
 import { RuleRegistry } from '@civ-clone/core-rule/RuleRegistry';
+import { LandMassRegistry } from '@civ-clone/core-world/LandMassRegistry';
 import Start from '@civ-clone/core-engine/Rules/Start';
 /**
  * The grids a world can be laid out on: Civilization II's own staggered isometric grid, its default, and the square and
@@ -9,6 +10,7 @@ import Start from '@civ-clone/core-engine/Rules/Start';
 export declare const topologyIds: string[];
 export declare const getRules: (
   ruleRegistry?: RuleRegistry,
-  engine?: Engine
+  engine?: Engine,
+  landMassRegistry?: LandMassRegistry
 ) => Start[];
 export default getRules;

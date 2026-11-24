@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getRules = exports.topologyIds = void 0;
 const Engine_1 = require("@civ-clone/core-engine/Engine");
 const RuleRegistry_1 = require("@civ-clone/core-rule/RuleRegistry");
+const LandMassRegistry_1 = require("@civ-clone/core-world/LandMassRegistry");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
 const Start_1 = require("@civ-clone/core-engine/Rules/Start");
 const WorldSizes_1 = require("../../WorldSizes");
@@ -13,9 +14,10 @@ const startWorld_1 = require("@civ-clone/base-world-start/lib/startWorld");
  *  (civ-clone/web-renderer#1249). Its Earth is always on its own grid (civ2-earth-generator).
  */
 exports.topologyIds = ['staggered-iso', 'square', 'hex-odd-r'];
-const getRules = (ruleRegistry = RuleRegistry_1.instance, engine = Engine_1.instance) => [
+const getRules = (ruleRegistry = RuleRegistry_1.instance, engine = Engine_1.instance, landMassRegistry = LandMassRegistry_1.instance) => [
     new Start_1.default(new Effect_1.default(() => {
         (0, startWorld_1.default)(ruleRegistry, engine, {
+            landMassRegistry,
             defaults: {
                 topologyId: 'staggered-iso',
                 // A normal map: 50 squares across (100 in Civilization II's doubled x) and 80 down, like `WORLD_M.MP`.
