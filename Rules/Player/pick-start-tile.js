@@ -40,7 +40,7 @@ const getRules = (engine = Engine_1.instance, randomNumberGenerator = core_rando
         //  Those starts are kept clear of without being taken from the tribes still to choose theirs.
         //  A square a tribe starts on is theirs from then on, and the original puts no hut on a square anyone owns
         //  (`tile_has_hut`), so one the seed put there is taken away.
-        const map = (0, earth_1.earthMapOf)(world, engine), owned = (tile) => {
+        const map = (0, earth_1.earthMapOf)(world), owned = (tile) => {
             const hut = map !== null && tile !== undefined
                 ? goodyHutRegistry.getByTile(tile)
                 : null;

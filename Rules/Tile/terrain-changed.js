@@ -9,7 +9,6 @@ const TerrainFeatures_1 = require("../../TerrainFeatures");
 const TerrainChanged_1 = require("@civ-clone/core-world/Rules/TerrainChanged");
 const replaceFeatures_1 = require("@civ-clone/base-terrain-feature/lib/replaceFeatures");
 const core_random_1 = require("@civ-clone/core-random");
-const Engine_1 = require("@civ-clone/core-engine/Engine");
 const earth_1 = require("../../lib/earth");
 const terrain_1 = require("../../data/terrain");
 const feature_1 = require("../Terrain/feature");
@@ -31,13 +30,13 @@ exports.CLEAR_YIELD_CACHE = 'civ2-world:terrain-changed/clear-yield-cache';
  *  cleared Jungle or Swamp, by the conversion action's own Shield roll as well. All of it is taken off first, or a
  *  Grassland would keep a shield from either roll (three in four, not one in two).
  */
-const getRules = (terrainFeatureRegistry = TerrainFeatureRegistry_1.instance, playerRegistry = PlayerRegistry_1.instance, randomNumberGenerator = core_random_1.instance, engine = Engine_1.instance) => {
+const getRules = (terrainFeatureRegistry = TerrainFeatureRegistry_1.instance, playerRegistry = PlayerRegistry_1.instance, randomNumberGenerator = core_random_1.instance) => {
     // Built on the registry these rules move features in, so the shield can never land in another one.
     const shield = (0, feature_1.shieldRule)(terrainFeatureRegistry, randomNumberGenerator);
     return [
         new TerrainChanged_1.default(exports.FEATURES, new Effect_1.default((0, replaceFeatures_1.default)(terrainFeatureRegistry, (features, to, from, tile) => {
             var _a, _b;
-            const toIndex = (0, terrainTable_1.terrainIndex)(to), map = (0, earth_1.earthMapOf)(tile.map(), engine), slot = map === null
+            const toIndex = (0, terrainTable_1.terrainIndex)(to), map = (0, earth_1.earthMapOf)(tile.map()), slot = map === null
                 ? (_b = (_a = (0, terrainTable_1.specialOf)(from, terrainFeatureRegistry)) === null || _a === void 0 ? void 0 : _a[1]) !== null && _b !== void 0 ? _b : 0
                 : (0, earth_1.seededSpecial)(tile, map.seed), NewSpecial = slot !== 0 && toIndex >= 0
                 ? terrainTable_1.specialTypes[slot - 1][toIndex]

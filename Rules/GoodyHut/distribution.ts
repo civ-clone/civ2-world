@@ -7,10 +7,6 @@ import {
   noHutWithin,
   onLand,
 } from '@civ-clone/base-goody-hut/lib/placement';
-import {
-  Engine,
-  instance as engineInstance,
-} from '@civ-clone/core-engine/Engine';
 import { earthMapOf } from '../../lib/earth';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Tile from '@civ-clone/core-world/Tile';
@@ -27,13 +23,12 @@ export const hutChance = 1 / 32;
 
 export const getRules = (
   goodyHutRegistry: GoodyHutRegistry = goodyHutRegistryInstance,
-  randomNumberGenerator: () => number = rngInstance,
-  engine: Engine = engineInstance
+  randomNumberGenerator: () => number = rngInstance
 ): Distribution[] => {
   const nearby = noHutWithin(1, goodyHutRegistry),
     roll = chance(hutChance, randomNumberGenerator),
     seeded = (tile: Tile): boolean | null => {
-      const map = earthMapOf(tile.map(), engine);
+      const map = earthMapOf(tile.map());
 
       if (map === null) {
         return null;

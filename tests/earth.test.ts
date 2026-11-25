@@ -205,6 +205,9 @@ describe('Earth', (): void => {
           !shieldAt(at(tile).x, at(tile).y)
       )!;
 
+    // As after a load, which doesn't keep the option: the world says it's the Earth (civ-clone/web-renderer#175).
+    game.engine.setOption('earth', false);
+
     special.setTerrain(new Grassland(game.rules));
     special.setTerrain(new Forest(game.rules));
     shielded.setTerrain(new Plains(game.rules));

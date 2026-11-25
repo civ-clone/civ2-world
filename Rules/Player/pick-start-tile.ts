@@ -59,7 +59,7 @@ export const getRules = (
         //  Those starts are kept clear of without being taken from the tribes still to choose theirs.
         //  A square a tribe starts on is theirs from then on, and the original puts no hut on a square anyone owns
         //  (`tile_has_hut`), so one the seed put there is taken away.
-        const map = earthMapOf(world, engine),
+        const map = earthMapOf(world),
           owned = (tile: Tile | undefined): Tile | undefined => {
             const hut =
               map !== null && tile !== undefined

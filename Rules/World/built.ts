@@ -15,10 +15,6 @@ import Effect from '@civ-clone/core-rule/Effect';
 import World from '@civ-clone/core-world/World';
 import { distributeHuts } from '@civ-clone/base-goody-hut/lib/placement';
 import { earthMapOf, placeEarth } from '../../lib/earth';
-import {
-  Engine,
-  instance as engineInstance,
-} from '@civ-clone/core-engine/Engine';
 import placeRivers from '../../lib/placeRivers';
 import { instance as rngInstance } from '@civ-clone/core-random';
 
@@ -33,13 +29,12 @@ export const getRules = (
   terrainFeatureRegistry: TerrainFeatureRegistry = terrainFeatureRegistryInstance,
   goodyHutRegistry: GoodyHutRegistry = goodyHutRegistryInstance,
   ruleRegistry: RuleRegistry = ruleRegistryInstance,
-  randomNumberGenerator: () => number = rngInstance,
-  engine: Engine = engineInstance
+  randomNumberGenerator: () => number = rngInstance
 ): Built[] => [
   new Built(
     RIVERS,
     new Effect((world: World): void => {
-      const map = earthMapOf(world, engine);
+      const map = earthMapOf(world);
 
       if (map !== null) {
         placeEarth(world, map, terrainFeatureRegistry);

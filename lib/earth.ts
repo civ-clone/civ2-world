@@ -5,6 +5,7 @@
 
 import {
   EarthMap,
+  earthGeneratorId,
   findEarthMap,
   playedSquares,
   toDoubled,
@@ -17,18 +18,24 @@ import {
 } from '@civ-clone/core-terrain-feature/TerrainFeatureRegistry';
 import { shieldAt, specialAt } from './positional';
 import { specialSlot, specialTypes, terrainIndex } from './terrainTable';
-import Engine from '@civ-clone/core-engine/Engine';
 import Tile from '@civ-clone/core-world/Tile';
-import World from '@civ-clone/core-world/World';
+import World, { IWorld } from '@civ-clone/core-world/World';
 import fatCross from '@civ-clone/base-city-tiles-fat-cross/lib/fatCross';
 
-/** Whether the game is on Earth: the `earth` option, as civ1-world reads it. */
-export const isEarth = (engine: Engine): boolean =>
-  !!engine.option('earth', false);
+/**
+ * Whether `world` is the Earth: made by civ2-earth-generator's `Earth`, as the world records (`generatorId()`) and keeps
+ *  in a save. The engine's `earth` option is what chooses that generator (`Rules/WorldGenerator/pick-generator`), before
+ *  there is a world, and isn't saved, so a rule that read it after a load was told "no" (civ-clone/web-renderer#175).
+ */
+export const isEarth = (world: IWorld | null): boolean =>
+  // A square of no world (as a rule's own test makes) isn't the Earth's.
+  world !== null && world.generatorId() === earthGeneratorId;
 
-/** The Earth map `world` was made from, when the game is on Earth. */
-export const earthMapOf = (world: World, engine: Engine): EarthMap | null =>
-  isEarth(engine) ? findEarthMap(world.width(), world.height()) : null;
+/** The Earth map `world` was made from, when it's the Earth. */
+export const earthMapOf = (world: World | null): EarthMap | null =>
+  world !== null && isEarth(world)
+    ? findEarthMap(world.width(), world.height())
+    : null;
 
 /** The special the seed puts on `tile`, as which of its terrain's two, or 0. */
 export const seededSpecial = (tile: Tile, seed: number): 0 | 1 | 2 => {
