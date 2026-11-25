@@ -1,7 +1,6 @@
 import { TerrainFeatureRegistry } from '@civ-clone/core-terrain-feature/TerrainFeatureRegistry';
 import { PlayerRegistry } from '@civ-clone/core-player/PlayerRegistry';
 import TerrainChanged from '@civ-clone/core-world/Rules/TerrainChanged';
-import { Engine } from '@civ-clone/core-engine/Engine';
 export declare const FEATURES = 'civ2-world:terrain-changed/features';
 export declare const CLEAR_YIELD_CACHE =
   'civ2-world:terrain-changed/clear-yield-cache';
@@ -24,7 +23,6 @@ export declare const CLEAR_YIELD_CACHE =
 export declare const getRules: (
   terrainFeatureRegistry?: TerrainFeatureRegistry,
   playerRegistry?: PlayerRegistry,
-  randomNumberGenerator?: () => number,
-  engine?: Engine
+  randomNumberGenerator?: () => number
 ) => TerrainChanged[];
 export default getRules;

@@ -2,7 +2,6 @@ import { GoodyHutRegistry } from '@civ-clone/core-goody-hut/GoodyHutRegistry';
 import { RuleRegistry } from '@civ-clone/core-rule/RuleRegistry';
 import { TerrainFeatureRegistry } from '@civ-clone/core-terrain-feature/TerrainFeatureRegistry';
 import Built from '@civ-clone/core-world/Rules/Built';
-import { Engine } from '@civ-clone/core-engine/Engine';
 export declare const RIVERS = 'civ2-world:world/built/rivers';
 export declare const HUTS = 'civ2-world:world/built/huts';
 /**
@@ -13,7 +12,6 @@ export declare const getRules: (
   terrainFeatureRegistry?: TerrainFeatureRegistry,
   goodyHutRegistry?: GoodyHutRegistry,
   ruleRegistry?: RuleRegistry,
-  randomNumberGenerator?: () => number,
-  engine?: Engine
+  randomNumberGenerator?: () => number
 ) => Built[];
 export default getRules;

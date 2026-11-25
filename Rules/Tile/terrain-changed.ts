@@ -16,10 +16,6 @@ import TerrainChanged from '@civ-clone/core-world/Rules/TerrainChanged';
 import TerrainFeature from '@civ-clone/core-terrain-feature/TerrainFeature';
 import replaceFeatures from '@civ-clone/base-terrain-feature/lib/replaceFeatures';
 import { instance as rngInstance } from '@civ-clone/core-random';
-import {
-  Engine,
-  instance as engineInstance,
-} from '@civ-clone/core-engine/Engine';
 import { earthMapOf, seededShield, seededSpecial } from '../../lib/earth';
 import { GRASSLAND } from '../../data/terrain';
 import { shieldRule } from '../Terrain/feature';
@@ -46,8 +42,7 @@ export const CLEAR_YIELD_CACHE = 'civ2-world:terrain-changed/clear-yield-cache';
 export const getRules = (
   terrainFeatureRegistry: TerrainFeatureRegistry = terrainFeatureRegistryInstance,
   playerRegistry: PlayerRegistry = playerRegistryInstance,
-  randomNumberGenerator: () => number = rngInstance,
-  engine: Engine = engineInstance
+  randomNumberGenerator: () => number = rngInstance
 ): TerrainChanged[] => {
   // Built on the registry these rules move features in, so the shield can never land in another one.
   const shield = shieldRule(terrainFeatureRegistry, randomNumberGenerator);
@@ -65,7 +60,7 @@ export const getRules = (
             tile: Tile
           ): TerrainFeature[] => {
             const toIndex = terrainIndex(to),
-              map = earthMapOf(tile.map(), engine),
+              map = earthMapOf(tile.map()),
               slot =
                 map === null
                   ? specialOf(from, terrainFeatureRegistry)?.[1] ?? 0
